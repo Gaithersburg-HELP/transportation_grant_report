@@ -1,0 +1,30 @@
+{
+  "name": "transportation_grant_report",
+  "version": "1.0.0",
+  "description": "Given transportation and address data, this report validates addresses against the Gaithersburg city database and computes totals",
+  "homepage": "https://github.com/gaithersburg-HELP/transportation_grant_report#readme",
+  "bugs": {
+    "url": "https://github.com/gaithersburg-HELP/transportation_grant_report/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gaithersburg-HELP/transportation_grant_report.git"
+  },
+  "license": "MIT",
+  "author": "",
+  "type": "commonjs",
+  "main": "sheet_utilities.js",
+  "scripts": {
+    "test": "qunit "
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "eslint-config-eslint": "^11.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "globals": "^15.13.0",
+    "prettier": "3.4.2"
+  }
+}
