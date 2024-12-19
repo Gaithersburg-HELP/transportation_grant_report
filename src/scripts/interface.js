@@ -9,12 +9,10 @@ function userAddRecords() {
   // Calculate totals and addresses
 }
 
-function userClearTotalsAddressesUnprotect() {
+function userClearRecalculateTotalsAddresses() {
   getTotalRange().setValue(0);
+  getRunningTotalRange().setValue("");
   getAddressReportRange().clearContent();
   unprotectDatabase();
-}
-
-function userRecalculateTotalsAddresses() {
   // TODO calculate totals and addresses
 }

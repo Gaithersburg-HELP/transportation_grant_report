@@ -22,12 +22,12 @@ function getTestSheet() {
   return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("TESTS");
 }
 
-function getCityFundPerQuarter() {
-  return getHomeSheet().getRange("C4").getValue();
+function getCityFundPerQuarterRange() {
+  return getHomeSheet().getRange("C10");
 }
 
-function getCountyFundPerQuarter() {
-  return getHomeSheet().getRange("C5").getValue();
+function getCountyFundPerQuarterRange() {
+  return getHomeSheet().getRange("C11");
 }
 
 function getPasteRange() {
@@ -47,15 +47,21 @@ function getRunningTotalRange() {
 }
 
 function getDatabaseRange() {
-  return getHomeSheet().getRange("A13:S3000");
+  return getHomeSheet().getRange("A13:U3000");
 }
 
 const DB_PROTECTION_DESC = "protect database";
 
+function setProtection(rangeToProtect) {
+  const rangeProtection = rangeToProtect.protect();
+  rangeProtection.setDescription(DB_PROTECTION_DESC);
+  rangeProtection.setWarningOnly(true);
+}
+
 function protectDatabase() {
-  const dbProtection = getDatabaseRange().protect();
-  dbProtection.setDescription(DB_PROTECTION_DESC);
-  dbProtection.setWarningOnly(true);
+  setProtection(getDatabaseRange());
+  setProtection(getCityFundPerQuarterRange());
+  setProtection(getCountyFundPerQuarterRange());
 }
 
 function unprotectDatabase() {
@@ -76,7 +82,6 @@ function clearAll() {
   getMostRecentRange().setValue("most recent visit date already added:");
   getPasteRange().clearContent();
   getTotalRange().setValue(0);
-  getRunningTotalRange().clearContent();
   getDatabaseRange().clearContent();
   getAddressReportRange().clearContent();
 }
