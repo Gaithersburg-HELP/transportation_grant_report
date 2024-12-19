@@ -3,19 +3,31 @@ function transpose(matrix) {
 }
 
 function getPasteSheet() {
-  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Paste");
+  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Paste Here");
 }
 
 function getHomeSheet() {
-  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Home");
+  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("FY Qtr Details");
 }
 
 function getAddressReportSheet() {
-  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Addresses");
+  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Address Listings");
+}
+
+function getCountyReportSheet() {
+  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Non-City Grant Clients");
 }
 
 function getTestSheet() {
   return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("TESTS");
+}
+
+function getCityFundPerQuarter() {
+  return getHomeSheet().getRange("C4").getValue();
+}
+
+function getCountyFundPerQuarter() {
+  return getHomeSheet().getRange("C5").getValue();
 }
 
 function getPasteRange() {
@@ -28,6 +40,10 @@ function getMostRecentRange() {
 
 function getTotalRange() {
   return getHomeSheet().getRange("H2:K9");
+}
+
+function getRunningTotalRange() {
+  return getHomeSheet().getRange("T13:U3000");
 }
 
 function getDatabaseRange() {
@@ -60,6 +76,7 @@ function clearAll() {
   getMostRecentRange().setValue("most recent visit date already added:");
   getPasteRange().clearContent();
   getTotalRange().setValue(0);
+  getRunningTotalRange().clearContent();
   getDatabaseRange().clearContent();
   getAddressReportRange().clearContent();
 }
