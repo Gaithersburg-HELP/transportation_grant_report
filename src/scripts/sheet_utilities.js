@@ -34,6 +34,23 @@ function getDatabaseRange() {
   return getHomeSheet().getRange("A13:M3000");
 }
 
+const DB_PROTECTION_DESC = "protect database";
+
+function protectDatabase() {
+  const dbProtection = getDatabaseRange().protect();
+  dbProtection.setDescription(DB_PROTECTION_DESC);
+  dbProtection.setWarningOnly(true);
+}
+
+function unprotectDatabase() {
+  const protections = getHomeSheet().getProtections(SpreadsheetApp.ProtectionType.RANGE);
+  protections.forEach((protection) => {
+    if (protection.getDescription() === DB_PROTECTION_DESC) {
+      protection.remove();
+    }
+  });
+}
+
 function getAddressReportRange() {
   return getAddressReportSheet().getRange("A2:M3000");
 }
