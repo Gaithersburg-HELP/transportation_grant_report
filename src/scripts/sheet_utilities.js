@@ -19,7 +19,7 @@ function getTestSheet() {
 }
 
 function getPasteRange() {
-  return getPasteSheet().getRange("A7:K1000");
+  return getPasteSheet().getRange("A7:Q1000");
 }
 
 function getMostRecentRange() {
@@ -31,7 +31,7 @@ function getTotalRange() {
 }
 
 function getDatabaseRange() {
-  return getHomeSheet().getRange("A13:M3000");
+  return getHomeSheet().getRange("A13:S3000");
 }
 
 const DB_PROTECTION_DESC = "protect database";
