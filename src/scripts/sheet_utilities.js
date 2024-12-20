@@ -43,11 +43,20 @@ function getTotalRange() {
 }
 
 function getRunningTotalRange() {
-  return getHomeSheet().getRange("T13:U3000");
+  return getHomeSheet().getRange("T13:V3000");
 }
 
 function getDatabaseRange() {
-  return getHomeSheet().getRange("A13:U3000");
+  let dbRange = null;
+
+  getHomeSheet()
+    .getNamedRanges()
+    .forEach((namedRange) => {
+      if (namedRange.getName() === "Database") {
+        dbRange = namedRange;
+      }
+    });
+  return dbRange.getRange();
 }
 
 const DB_PROTECTION_DESC = "protect database";

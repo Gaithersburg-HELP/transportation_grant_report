@@ -14,11 +14,15 @@ function runAllTests() {
     hooks.beforeEach(() => {
       SpreadsheetApp.flush();
       clearAll();
+      getCityFundPerQuarterRange().setValue(50);
+      getCountyFundPerQuarterRange().setValue(50);
     });
 
     hooks.afterEach(() => {
       SpreadsheetApp.flush();
       clearAll();
+      getCityFundPerQuarterRange().setValue(1250);
+      getCountyFundPerQuarterRange().setValue(2291.5);
     });
 
     QUnit.test("testPaste", (assert) => {
