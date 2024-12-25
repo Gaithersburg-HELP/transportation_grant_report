@@ -28,8 +28,8 @@ function runAllTests() {
       getCountyFundPerQuarterRange().setValue(existingCountyFundLimit);
     });
 
-    QUnit.test("testPaste", (assert) => {
-      assert.true(testPaste());
+    QUnit.test("testAll", (assert) => {
+      assert.true(testAll());
     });
   });
 }
@@ -56,4 +56,10 @@ function loadTestData(testName, dataName) {
     dataColEnd - dataColStart + 1,
   );
   return dataRange;
+}
+
+// Copies test data from TESTS into paste range
+function pasteTestData(testName, dataName) {
+  const testDataRng = loadTestData(testName, dataName);
+  testDataRng.copyTo(getPasteRange().getCell(1, 1), { contentsOnly: true });
 }

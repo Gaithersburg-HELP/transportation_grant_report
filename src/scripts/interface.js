@@ -1,7 +1,3 @@
-function userPasteRecords() {
-  // TODO paste records
-}
-
 function userAddRecords() {
   // TODO move records to Home
   // Validate addresses against ArcGIS
