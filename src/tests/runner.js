@@ -2,6 +2,9 @@
 // Only this runner function loads QUnit to check if tests return true
 // Search for "failed" in console log to find failing tests
 function runAllTests() {
+  const existingCityFundLimit = getCityFundPerQuarterRange().getValue();
+  const existingCountyFundLimit = getCountyFundPerQuarterRange().getValue();
+
   QUnit.on("runEnd", (runEnd) => {
     Logger.log(JSON.stringify(runEnd, null, " "));
   });
@@ -21,8 +24,8 @@ function runAllTests() {
     hooks.afterEach(() => {
       SpreadsheetApp.flush();
       clearAll();
-      getCityFundPerQuarterRange().setValue(1250);
-      getCountyFundPerQuarterRange().setValue(2291.5);
+      getCityFundPerQuarterRange().setValue(existingCityFundLimit);
+      getCountyFundPerQuarterRange().setValue(existingCountyFundLimit);
     });
 
     QUnit.test("testPaste", (assert) => {
