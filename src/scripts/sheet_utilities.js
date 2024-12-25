@@ -42,8 +42,8 @@ function getTotalRange() {
   return getHomeSheet().getRange("H2:K9");
 }
 
-function getRunningTotalRange() {
-  return getHomeSheet().getRange("T13:V3000");
+function getCalculatedFieldsRange() {
+  return getHomeSheet().getRange("T13:Z3000");
 }
 
 function getDatabaseRange() {
@@ -93,4 +93,5 @@ function clearAll() {
   getTotalRange().setValue(0);
   getDatabaseRange().clearContent();
   getAddressReportRange().clearContent();
+  getCalculatedFieldsRange().clearContent();
 }

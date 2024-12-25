@@ -11,7 +11,7 @@ function userAddRecords() {
 
 function userClearRecalculateTotalsAddresses() {
   getTotalRange().setValue(0);
-  getRunningTotalRange().setValue("");
+  getCalculatedFieldsRange().clearContent();
   getAddressReportRange().clearContent();
   unprotectDatabase();
   // TODO calculate totals and addresses
