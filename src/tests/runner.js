@@ -63,3 +63,21 @@ function pasteTestData(testName, dataName) {
   const testDataRng = loadTestData(testName, dataName);
   testDataRng.copyTo(getPasteRange().getCell(1, 1), { contentsOnly: true });
 }
+
+function compareRanges(range1, range2) {
+  const errorRowIndex = 0;
+  const errorColIndex = 1;
+  return { errorRowIndex, errorColIndex };
+}
+
+function compareTestData(actualRangeName, rangeToCompare, testName, dataName) {
+  const { errorRowIndex, errorColIndex } = compareRanges(rangeToCompare.getValues(), loadTestData(testName, dataName));
+
+  if (errorRowIndex === 0 && errorColIndex === 0) {
+    return true;
+  }
+  Logger.log(
+    `Range ${actualRangeName} does not match expected range: ${testName},${dataName} at ${errorRowIndex},${errorColIndex}`,
+  );
+  return false;
+}
