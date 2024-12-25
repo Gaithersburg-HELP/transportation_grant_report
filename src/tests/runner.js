@@ -40,7 +40,7 @@ function findNameIndex(values, name) {
 }
 
 // Returns range on TESTS sheet from $(testName)$(dataName) to $(End+testName)$(End+dataName)
-function loadTestData(testName, dataName) {
+function loadTestDataRange(testName, dataName) {
   const testSheet = getTestSheet();
   const testNames = transpose(testSheet.getRange("A:A").getValues())[0];
   const dataNames = testSheet.getRange("1:1").getValues();
@@ -60,24 +60,59 @@ function loadTestData(testName, dataName) {
 
 // Copies test data from TESTS into paste range
 function pasteTestData(testName, dataName) {
-  const testDataRng = loadTestData(testName, dataName);
+  const testDataRng = loadTestDataRange(testName, dataName);
   testDataRng.copyTo(getPasteRange().getCell(1, 1), { contentsOnly: true });
 }
 
-function compareRanges(range1, range2) {
-  const errorRowIndex = 0;
-  const errorColIndex = 1;
+// 1-based rowIndex
+function getRangeRow(range, rowIndex) {
+  return range.getSheet().getRange(range.getRow() + rowIndex - 1, range.getColumn(), 1, range.getWidth());
+}
+
+// Assumes both 2D ranges, tries to drop blank rows at end of actualRange
+// If actualRange data is longer, only checks if row past expectedRange.length isBlank() and assumes rest of the rows are blank also
+// Returns 1-based indices, 0 if match
+function compareRanges(actualRange, expectedRange) {
+  let errorRowIndex = 0;
+  let errorColIndex = 0;
+
+  const actualRangeValues = actualRange.getValues();
+  const expectedRangeValues = expectedRange.getValues();
+
+  if (actualRange.getWidth() !== expectedRange.getWidth()) {
+    errorRowIndex = 1;
+    errorColIndex = actualRange.getWidth();
+  } else if (
+    actualRangeValues.length > expectedRangeValues.length &&
+    !getRangeRow(actualRange, expectedRangeValues.length + 1).isBlank()
+  ) {
+    errorRowIndex = expectedRangeValues.length + 1;
+    errorColIndex = 1;
+  } else {
+    loopRow: for (let row = 0; row < expectedRangeValues.length; row++) {
+      for (let col = 0; col < expectedRangeValues[0].length; col++) {
+        if (actualRangeValues[row][col] !== expectedRangeValues[row][col]) {
+          errorRowIndex = row + 1;
+          errorColIndex = col + 1;
+          break loopRow;
+        }
+      }
+    }
+  }
+
   return { errorRowIndex, errorColIndex };
 }
 
 function compareTestData(actualRangeName, rangeToCompare, testName, dataName) {
-  const { errorRowIndex, errorColIndex } = compareRanges(rangeToCompare.getValues(), loadTestData(testName, dataName));
+  const testDataRng = loadTestDataRange(testName, dataName);
+
+  const { errorRowIndex, errorColIndex } = compareRanges(rangeToCompare, testDataRng);
 
   if (errorRowIndex === 0 && errorColIndex === 0) {
     return true;
   }
   Logger.log(
-    `Range ${actualRangeName} does not match expected range: ${testName},${dataName} at ${errorRowIndex},${errorColIndex}`,
+    `${actualRangeName} range does not match expected range: ${testName},${dataName} at ${testDataRng.getRow() + errorRowIndex - 1},${String.fromCharCode(64 + testDataRng.getColumn() + errorColIndex - 1)}`,
   );
   return false;
 }

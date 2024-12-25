@@ -17,6 +17,7 @@ export default [
       "jsdoc/require-jsdoc": "off",
       "no-unused-vars": "off",
       "no-undef": "off",
+      "no-labels": "off",
     },
   },
 ];
