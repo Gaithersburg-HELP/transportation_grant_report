@@ -58,9 +58,14 @@ function loadTestDataRange(testName, dataName) {
   return dataRange;
 }
 
-// Copies test data from TESTS into paste range
-function pasteTestData(testName, dataName) {
-  const testDataRng = loadTestDataRange(testName, dataName);
+// Copies specified number of rows of test data from TESTS into paste range
+// Copies all rows by default
+// rowStart is 1-based
+function pasteTestData(testName, dataName, rows = 0, rowStart = 1) {
+  let testDataRng = loadTestDataRange(testName, dataName);
+  if (rows > 0) {
+    testDataRng = testDataRng.offset(rowStart - 1, 0, rows);
+  }
   testDataRng.copyTo(getPasteRange().getCell(1, 1), { contentsOnly: true });
 }
 

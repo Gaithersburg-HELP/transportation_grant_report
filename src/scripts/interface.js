@@ -5,7 +5,15 @@ function userRecalculateTotalsAddresses() {
 }
 
 function userAddRecords() {
-  getPasteRange().copyTo(getDatabaseRange().getCell(1, 3), { contentsOnly: true });
+  if (getDatabaseRange().isBlank()) {
+    getPasteRange().copyTo(getDatabaseRange().getCell(1, DB_FIELD_INDICES.Name), { contentsOnly: true });
+  } else {
+    getPasteRange().copyTo(
+      getDatabaseRange().offset(getDatabaseRange().getNumRows(), DB_FIELD_INDICES.Name - 1, 1, 1),
+      { contentsOnly: true },
+    );
+  }
+
   getPasteRange().clearContent();
 
   validateCategorizeDatabase();
