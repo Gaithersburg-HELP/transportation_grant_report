@@ -34,10 +34,6 @@ function getPasteRange() {
   return getPasteSheet().getRange("A7:Q1000");
 }
 
-function getMostRecentRange() {
-  return getPasteSheet().getRange("A4");
-}
-
 function getTotalRange() {
   return getHomeSheet().getRange("H2:K9");
 }
@@ -132,7 +128,6 @@ function getAddressReportRange() {
 
 function clearAll() {
   SpreadsheetApp.flush();
-  getMostRecentRange().setValue("most recent visit date already added:");
   getPasteRange().clearContent();
   getTotalRange().setValue(0);
   getDatabaseRange().clearContent();

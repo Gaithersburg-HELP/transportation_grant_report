@@ -5,6 +5,10 @@ function userRecalculateTotalsAddresses() {
 }
 
 function userAddRecords() {
+  if (getPasteRange().isBlank()) {
+    return;
+  }
+
   if (getDatabaseRange().isBlank()) {
     getPasteRange().copyTo(getDatabaseRange().getCell(1, DB_FIELD_INDICES.Name), { contentsOnly: true });
   } else {
