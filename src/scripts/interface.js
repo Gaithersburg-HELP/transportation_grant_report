@@ -1,14 +1,21 @@
-function userAddRecords() {
-  // TODO move records to Home
-  // Validate addresses against ArcGIS
-  // Categorize addresses appropriately
-  // Calculate totals and addresses
+function userRecalculateTotalsAddresses() {
+  // TODO calculate totals and addresses
+
+  protectDatabase();
 }
 
-function userClearRecalculateTotalsAddresses() {
+function userAddRecords() {
+  getPasteRange().copyTo(getDatabaseRange().getCell(1, 3), { contentsOnly: true });
+  getPasteRange().clearContent();
+
+  validateCategorizeDatabase();
+
+  userRecalculateTotalsAddresses();
+}
+
+function userClearTotalsAddresses() {
   getTotalRange().setValue(0);
   getCalculatedFieldsRange().clearContent();
   getAddressReportRange().clearContent();
   unprotectDatabase();
-  // TODO calculate totals and addresses
 }

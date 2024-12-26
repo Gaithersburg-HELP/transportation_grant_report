@@ -18,6 +18,7 @@ export default [
       "no-unused-vars": "off",
       "no-undef": "off",
       "no-labels": "off",
+      "default-case": "off",
     },
   },
 ];

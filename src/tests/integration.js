@@ -1,10 +1,10 @@
 function testAll() {
-  const assertion = true;
+  let assertion = true;
 
   pasteTestData("TestAll", "Input");
   userAddRecords();
 
-  compareTestData("Database", getDatabaseRange(), "TestAll", "DatabaseOutput");
+  assertion = assertion && compareTestData("Database", getDatabaseRange(), "TestAll", "DatabaseOutput");
 
   clearAll();
 

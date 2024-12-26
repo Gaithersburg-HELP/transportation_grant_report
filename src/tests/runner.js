@@ -64,13 +64,7 @@ function pasteTestData(testName, dataName) {
   testDataRng.copyTo(getPasteRange().getCell(1, 1), { contentsOnly: true });
 }
 
-// 1-based rowIndex
-function getRangeRow(range, rowIndex) {
-  return range.getSheet().getRange(range.getRow() + rowIndex - 1, range.getColumn(), 1, range.getWidth());
-}
-
-// Assumes both 2D ranges, tries to drop blank rows at end of actualRange
-// If actualRange data is longer, only checks if row past expectedRange.length isBlank() and assumes rest of the rows are blank also
+// Assumes both 2D ranges, drops blank rows at end of actualRange
 // Returns 1-based indices, 0 if match
 function compareRanges(actualRange, expectedRange) {
   let errorRowIndex = 0;
@@ -82,10 +76,7 @@ function compareRanges(actualRange, expectedRange) {
   if (actualRange.getWidth() !== expectedRange.getWidth()) {
     errorRowIndex = 1;
     errorColIndex = actualRange.getWidth();
-  } else if (
-    actualRangeValues.length > expectedRangeValues.length &&
-    !getRangeRow(actualRange, expectedRangeValues.length + 1).isBlank()
-  ) {
+  } else if (actualRange.getSheet().getLastRow() - actualRange.getRow() + 1 !== expectedRange.getNumRows()) {
     errorRowIndex = expectedRangeValues.length + 1;
     errorColIndex = 1;
   } else {
