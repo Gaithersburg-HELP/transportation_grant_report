@@ -1,5 +1,6 @@
 function userRecalculateTotalsAddresses() {
-  // TODO calculate totals and addresses
+  // TODO Step 1) Sort by quarter, then by In City, then by Appointment Date
+  // TODO Step 2) compute running total
 
   protectDatabase();
 }

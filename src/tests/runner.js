@@ -32,6 +32,12 @@ function runAllTests() {
       assert.true(testAll());
     });
   });
+
+  QUnit.module("Unit", (hooks) => {
+    QUnit.test("testAddressPrefixPostfix", (assert) => {
+      assert.true(testAddressPrefixPostfix());
+    });
+  });
 }
 
 // Given an array of values, finds the one-based index of value which matches provided name

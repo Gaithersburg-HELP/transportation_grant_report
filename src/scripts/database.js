@@ -30,9 +30,9 @@ function validateCategorizeDatabase() {
 
     categories.push(category);
 
-    const address = currentRow.getCell(1, DB_FIELD_INDICES.Address).getValue();
+    // NOTE assumes no duplicate street names in neighboring cities
+    const address = new Address(currentRow.getCell(1, DB_FIELD_INDICES.Address).getValue()).formattedStreetWithUnit;
 
-    // TODO clean and format address here before comparison
     if (addressValidations.has(address)) {
       addressValidations.get(address).rows.push(row);
     } else {
