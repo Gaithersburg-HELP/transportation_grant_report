@@ -145,3 +145,14 @@ function Address(rawAddress) {
     formattedStreetWithUnit: { value: formattedStreetWithUnit }, // Street Num + Prefix + Street Name + Street Type + Postfix + Unit Type + Unit Num
   });
 }
+
+function AddressValidation(row) {
+  this.rows = [row];
+  this.inCity = false;
+}
+
+// Expects Map of Address : AddressValidation
+// Modifies AddressValidation objects to validation result
+function validateAddresses(addressValidations) {
+  // TODO
+}

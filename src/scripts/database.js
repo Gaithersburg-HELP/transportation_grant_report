@@ -1,8 +1,3 @@
-function AddressValidation(row) {
-  this.rows = [row];
-  this.inCity = false;
-}
-
 function validateCategorizeDatabase() {
   let row = 1;
 
@@ -41,11 +36,10 @@ function validateCategorizeDatabase() {
     row += 1;
   }
 
-  // TODO Validate addresses against ArcGIS
+  validateAddresses(addressValidations);
 
   const inCity = [];
   addressValidations.forEach((validation, address) => {
-    // TODO add calculated address fields
     validation.rows.forEach((validatedRow) => {
       // inCity is zero-based but AddressValidation rows are 1-based
       if (validation.inCity) {
