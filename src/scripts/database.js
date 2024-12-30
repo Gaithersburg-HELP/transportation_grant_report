@@ -1,15 +1,15 @@
 function validateCategorizeDatabase() {
-  let row = 1;
-
   const categories = [];
   const addressValidations = new Map();
 
   const dbLength = getDatabaseRange().getNumRows();
+  const database = getDatabaseRange().getValues();
 
+  let row = 1;
   while (row <= dbLength) {
-    const currentRow = getRangeRow(getDatabaseRange(), row);
+    const currentRow = database[row - 1];
 
-    let category = currentRow.getCell(1, DB_FIELD_INDICES.Type).getValue();
+    let category = currentRow[DB_FIELD_INDICES.Type - 1];
     switch (category) {
       case "Medical/Dental":
       case "Other":
@@ -26,7 +26,7 @@ function validateCategorizeDatabase() {
     categories.push(category);
 
     // NOTE assumes no duplicate street names in neighboring cities
-    const address = new Address(currentRow.getCell(1, DB_FIELD_INDICES.Address).getValue()).formattedStreetWithUnit;
+    const address = new Address(currentRow[DB_FIELD_INDICES.Address - 1]).formattedStreetWithUnit;
 
     if (addressValidations.has(address)) {
       addressValidations.get(address).rows.push(row);
@@ -39,7 +39,7 @@ function validateCategorizeDatabase() {
   validateAddresses(addressValidations);
 
   const inCity = [];
-  addressValidations.forEach((validation, address) => {
+  addressValidations.forEach((validation) => {
     validation.rows.forEach((validatedRow) => {
       // inCity is zero-based but AddressValidation rows are 1-based
       if (validation.inCity) {

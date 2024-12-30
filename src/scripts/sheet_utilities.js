@@ -31,7 +31,7 @@ function getCountyFundPerQuarterRange() {
 }
 
 function getPasteRange() {
-  return getPasteSheet().getRange("A7:Q1000");
+  return getPasteSheet().getRange("A7:Q2000");
 }
 
 function getTotalRange() {
@@ -90,11 +90,6 @@ function unprotectDatabase() {
   });
 }
 
-// 1-based rowIndex
-function getRangeRow(range, rowIndex) {
-  return range.offset(rowIndex - 1, 0, 1, range.getWidth());
-}
-
 // 1-based colIndex
 function getRangeCol(range, colIndex) {
   return range.offset(0, colIndex - 1, range.getNumRows(), 1);
@@ -120,6 +115,26 @@ const DB_FIELD_INDICES = Object.freeze({
   Taxi: 17,
   Return: 18,
   Total: 19,
+});
+
+const PASTE_FIELD_INDICES = Object.freeze({
+  Name: 1,
+  Phone: 2,
+  Address: 3,
+  Type: 4,
+  ApptDate: 5,
+  ApptTime: 6,
+  ApptDest: 7,
+  Provided: 8,
+  Driver: 9,
+  Scheduler: 10,
+  LogDate: 11,
+  Trip: 12,
+  Comments: 13,
+  Notes: 14,
+  Taxi: 15,
+  Return: 16,
+  Total: 17,
 });
 
 function getAddressReportRange() {
