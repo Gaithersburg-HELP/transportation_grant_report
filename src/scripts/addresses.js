@@ -132,6 +132,8 @@ function Address(rawAddress) {
     formattedStreetWithUnit = `${formattedStreetWithUnit} ${realPostfix}`;
   }
 
+  const formattedStreetWithoutUnit = formattedStreetWithUnit;
+
   if (unitType !== "") {
     formattedStreetWithUnit = `${formattedStreetWithUnit} ${unitType} ${unitNum}`;
   }
@@ -143,6 +145,7 @@ function Address(rawAddress) {
     unitType: { value: unitType },
     unitNum: { value: unitNum },
     formattedStreetWithUnit: { value: formattedStreetWithUnit }, // Street Num + Prefix + Street Name + Street Type + Postfix + Unit Type + Unit Num
+    formattedStreetWithoutUnit: { value: formattedStreetWithoutUnit },
   });
 }
 
@@ -151,8 +154,73 @@ function AddressValidation(row) {
   this.inCity = false;
 }
 
+// Expects HTTPResponse, logs to output and returns false if invalid, otherwise returns true
+function isValidResponse(response) {
+  const code = response.getResponseCode();
+  const result = JSON.parse(response.getContentText());
+  if ((code >= 400 && code <= 599) || Object.hasOwn(result, "error") || response.getContentText() === "") {
+    Logger.log(
+      `Error validating address: ${code.toString()} - ${JSON.stringify(
+        response.getAllHeaders(),
+      )} - ${response.getContentText()}`,
+    );
+    return false;
+  }
+  return true;
+}
+
 // Expects Map of Address : AddressValidation
 // Modifies AddressValidation objects to validation result
 function validateAddresses(addressValidations) {
-  // TODO
+  const addressesInRequestOrder = [];
+  const requests = [];
+  addressValidations.forEach((validation, address) => {
+    escapedAddress = address.replaceAll("'", "''");
+    const url =
+      `https://maps.gaithersburgmd.gov/arcgis/rest/services/layers/GaithersburgCityAddresses/` +
+      `MapServer/0/query?` +
+      `f=json&returnGeometry=false&` +
+      `outFields=Full_Address,Address_Number,Road_Prefix_Dir,Road_Name,Road_Type,Road_Post_Dir,Unit_Type,Unit_Number,Zip_Code&` +
+      `where=Full_Address%20LIKE%20%27${encodeURI(escapedAddress)}%27`;
+    requests.push(url);
+    addressesInRequestOrder.push(address);
+  });
+
+  const reattemptValidationRequests = [];
+  const reattemptAddressesInRequestOrder = [];
+
+  const responses = UrlFetchApp.fetchAll(requests);
+  responses.forEach((response, index) => {
+    const result = JSON.parse(response.getContentText());
+    if (!isValidResponse(response)) {
+      addressValidations.get(addressesInRequestOrder[index]).inCity = false;
+    } else {
+      if (result.features.length > 0) {
+        addressValidations.get(addressesInRequestOrder[index]).inCity = true;
+      } else {
+        // Reattempt validation with no unit since some addresses like Booth St don't have units
+        // in Gaithersburg database
+        const addressNoUnit = new Address(addressesInRequestOrder[index]).formattedStreetWithoutUnit.replaceAll(
+          "'",
+          "''",
+        );
+        const url =
+          `https://maps.gaithersburgmd.gov/arcgis/rest/services/layers/GaithersburgCityAddresses/` +
+          `MapServer/0/query?` +
+          `f=json&returnGeometry=false&` +
+          `outFields=Full_Address,Address_Number,Road_Prefix_Dir,Road_Name,Road_Type,Road_Post_Dir,Unit_Type,Unit_Number,Zip_Code&` +
+          `where=Core_Address%20LIKE%20%27${encodeURI(addressNoUnit)}%27`;
+        reattemptValidationRequests.push(url);
+        reattemptAddressesInRequestOrder.push(addressesInRequestOrder[index]);
+      }
+    }
+  });
+
+  const reattemptResponses = UrlFetchApp.fetchAll(reattemptValidationRequests);
+  reattemptResponses.forEach((reattemptResponse, index) => {
+    const result = JSON.parse(reattemptResponse.getContentText());
+
+    addressValidations.get(reattemptAddressesInRequestOrder[index]).inCity =
+      isValidResponse(reattemptResponse) && result.features.length > 0;
+  });
 }
