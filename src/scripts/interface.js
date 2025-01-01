@@ -196,10 +196,23 @@ function userRecalculateTotalsAddresses() {
   protectDatabase();
 }
 
+function setYearFormat(range) {
+  range.setNumberFormat("M/D/YYYY");
+}
+
+function setTimeFormat(range) {
+  range.setNumberFormat("[$-409]h:mm\\ AM/PM");
+}
+
 function userAddRecords() {
   if (getPasteRange().isBlank()) {
     return;
   }
+
+  // may run into issues comparing and printing dates/times unless formatting is set correctly
+  setYearFormat(getRangeCol(getPasteRange(), PASTE_FIELD_INDICES.ApptDate));
+  setYearFormat(getRangeCol(getPasteRange(), PASTE_FIELD_INDICES.LogDate));
+  setTimeFormat(getRangeCol(getPasteRange(), PASTE_FIELD_INDICES.ApptTime));
 
   if (getDatabaseRange().isBlank()) {
     getPasteRange().copyTo(getDatabaseRange().getCell(1, DB_FIELD_INDICES.Name), { contentsOnly: true });

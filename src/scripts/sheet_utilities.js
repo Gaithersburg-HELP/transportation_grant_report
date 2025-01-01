@@ -30,16 +30,26 @@ function getCountyFundPerQuarterRange() {
   return getHomeSheet().getRange("C11");
 }
 
-function getPasteRange() {
-  return getPasteSheet().getRange("A7:Q2000");
-}
-
 function getTotalRange() {
   return getHomeSheet().getRange("H2:K9");
 }
 
 function getCalculatedFieldsRange() {
   return getHomeSheet().getRange("T13:Z3000");
+}
+
+function removeBlanks(range) {
+  const rangeHeight = range.getSheet().getLastRow() - range.getRow() + 1;
+
+  if (rangeHeight === 0) {
+    return range.offset(0, 0, 1);
+  }
+  return range.offset(0, 0, rangeHeight);
+}
+
+// Returns first blank row if range is blank, otherwise returns all pasted rows with data only
+function getPasteRange() {
+  return removeBlanks(getPasteSheet().getRange("A7:Q2000"));
 }
 
 function getDatabaseRangeWithBlanks(rangeName) {
@@ -55,16 +65,9 @@ function getDatabaseRangeWithBlanks(rangeName) {
   return dbNamedRange.getRange();
 }
 
-// Returns first blank row if database is blank, otherwise returns database
+// Returns first blank row if database is blank, otherwise returns database rows with data only
 function getDatabaseRange(rangeName = "Database") {
-  const dbRangeWithBlanks = getDatabaseRangeWithBlanks(rangeName);
-
-  const dbHeight = getHomeSheet().getLastRow() - dbRangeWithBlanks.getRow() + 1;
-
-  if (dbHeight === 0) {
-    return dbRangeWithBlanks.offset(0, 0, 1);
-  }
-  return dbRangeWithBlanks.offset(0, 0, dbHeight);
+  return removeBlanks(getDatabaseRangeWithBlanks(rangeName));
 }
 
 const DB_PROTECTION_DESC = "protect database";

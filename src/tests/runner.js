@@ -99,7 +99,13 @@ function compareRanges(actualRange, expectedRange) {
   } else {
     loopRow: for (let row = 0; row < expectedRangeValues.length; row++) {
       for (let col = 0; col < expectedRangeValues[0].length; col++) {
+        if (typeof expectedRangeValues[row][col] === "object") {
+          // convert date to number before comparing
+          expectedRangeValues[row][col] = expectedRangeValues[row][col].valueOf();
+          actualRangeValues[row][col] = actualRangeValues[row][col].valueOf();
+        }
         if (actualRangeValues[row][col] !== expectedRangeValues[row][col]) {
+          Logger.log(`Actual ${actualRangeValues[row][col]} does not match Expected ${expectedRangeValues[row][col]}`);
           errorRowIndex = row + 1;
           errorColIndex = col + 1;
           break loopRow;
@@ -111,6 +117,19 @@ function compareRanges(actualRange, expectedRange) {
   return { errorRowIndex, errorColIndex };
 }
 
+// from https://stackoverflow.com/a/21231012/13342792
+function columnToLetter(column) {
+  let currentColumnToConvert = column;
+  let temp,
+    letter = "";
+  while (currentColumnToConvert > 0) {
+    temp = (currentColumnToConvert - 1) % 26;
+    letter = String.fromCharCode(temp + 65) + letter;
+    currentColumnToConvert = (currentColumnToConvert - temp - 1) / 26;
+  }
+  return letter;
+}
+
 function compareTestData(actualRangeName, rangeToCompare, testName, dataName) {
   const testDataRng = loadTestDataRange(testName, dataName);
 
@@ -120,7 +139,7 @@ function compareTestData(actualRangeName, rangeToCompare, testName, dataName) {
     return true;
   }
   Logger.log(
-    `${actualRangeName} range does not match expected range: ${testName},${dataName} at ${testDataRng.getRow() + errorRowIndex - 1},${String.fromCharCode(64 + testDataRng.getColumn() + errorColIndex - 1)}`,
+    `${actualRangeName} range does not match expected range: ${testName},${dataName} at ${testDataRng.getRow() + errorRowIndex - 1},${columnToLetter(testDataRng.getColumn() + errorColIndex - 1)}`,
   );
   return false;
 }
