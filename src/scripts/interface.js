@@ -65,6 +65,7 @@ class RunningTotal {
     this._countyGrantLimit = countyGrantLimit;
     this._runningTotal = 0.0;
     this._grantLimitsReached = 0;
+    this._currentQuarter = 1;
     this.runningTotals = [];
     this.grantTypes = [];
   }
@@ -86,12 +87,22 @@ class RunningTotal {
     }
   }
 
-  increment(total) {
+  increment(total, quarter, inCity) {
     if (total === "") {
       this.runningTotals.push("");
       this.grantTypes.push("");
       return;
     }
+    if (quarter > this._currentQuarter) {
+      this._currentQuarter = quarter;
+      this._runningTotal = 0.0;
+      this._grantLimitsReached = 0;
+    }
+    if (!inCity && this._grantLimitsReached === 0) {
+      this._runningTotal = 0.0;
+      this._grantLimitsReached = 1;
+    }
+
     this._runningTotal += total;
     switch (this._grantLimitsReached) {
       case 0:
@@ -156,7 +167,11 @@ function userRecalculateTotalsAddresses() {
       );
     }
     addressListings.get(name).setQuarter(sortedDatabase[row][DB_FIELD_INDICES.Quarter - 1]);
-    runningTotal.increment(sortedDatabase[row][DB_FIELD_INDICES.Total - 1]);
+    runningTotal.increment(
+      sortedDatabase[row][DB_FIELD_INDICES.Total - 1],
+      sortedDatabase[row][DB_FIELD_INDICES.Quarter - 1],
+      sortedDatabase[row][DB_FIELD_INDICES.InCity - 1] === "Yes",
+    );
     row += 1;
   }
 
