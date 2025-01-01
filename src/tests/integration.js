@@ -1,4 +1,9 @@
 function testAll() {
+  const existingCityFundLimit = getCityFundPerQuarterRange().getValue();
+  const existingCountyFundLimit = getCountyFundPerQuarterRange().getValue();
+  getCityFundPerQuarterRange().setValue(50);
+  getCountyFundPerQuarterRange().setValue(50);
+
   let assertion = true;
 
   // Test multiple runs of pasting and adding
@@ -9,8 +14,16 @@ function testAll() {
   userAddRecords();
 
   assertion = assertion && compareTestData("Database", getDatabaseRange(), "TestAll", "DatabaseOutput");
+  assertion =
+    assertion && compareTestData("Calculated Fields", getCalculatedFieldsRange(), "TestAll", "CalculatedFieldsOutput");
+  assertion = assertion && compareTestData("Address Listings", getAddressReportRange(), "TestAll", "AddressOutput");
+  assertion = assertion && compareTestData("Non City Grant", getCountyReportSheet(), "TestAll", "NonCityGrantOutput");
+
+  // TODO compare totals
 
   clearAll();
+  getCityFundPerQuarterRange().setValue(existingCityFundLimit);
+  getCountyFundPerQuarterRange().setValue(existingCountyFundLimit);
 
   return assertion;
 }

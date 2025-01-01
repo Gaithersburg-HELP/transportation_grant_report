@@ -42,13 +42,13 @@ function getCalculatedFieldsRange() {
   return getHomeSheet().getRange("T13:Z3000");
 }
 
-function getDatabaseRangeWithBlanks() {
+function getDatabaseRangeWithBlanks(rangeName) {
   let dbNamedRange = null;
 
   getHomeSheet()
     .getNamedRanges()
     .forEach((namedRange) => {
-      if (namedRange.getName() === "Database") {
+      if (namedRange.getName() === rangeName) {
         dbNamedRange = namedRange;
       }
     });
@@ -56,8 +56,8 @@ function getDatabaseRangeWithBlanks() {
 }
 
 // Returns first blank row if database is blank, otherwise returns database
-function getDatabaseRange() {
-  const dbRangeWithBlanks = getDatabaseRangeWithBlanks();
+function getDatabaseRange(rangeName = "Database") {
+  const dbRangeWithBlanks = getDatabaseRangeWithBlanks(rangeName);
 
   const dbHeight = getHomeSheet().getLastRow() - dbRangeWithBlanks.getRow() + 1;
 
@@ -76,7 +76,7 @@ function setProtection(rangeToProtect) {
 }
 
 function protectDatabase() {
-  setProtection(getDatabaseRangeWithBlanks());
+  setProtection(getDatabaseRangeWithBlanks("Database"));
   setProtection(getCityFundPerQuarterRange());
   setProtection(getCountyFundPerQuarterRange());
 }
@@ -94,6 +94,16 @@ function unprotectDatabase() {
 function getRangeCol(range, colIndex) {
   return range.offset(0, colIndex - 1, range.getNumRows(), 1);
 }
+
+const CALC_FIELD_INDICES = Object.freeze({
+  RunningTotal: 1,
+  GrantType: 2,
+  Quarter: 3,
+  StreetNumber: 4,
+  StreetName: 5,
+  Unit: 6,
+  Initials: 7,
+});
 
 const DB_FIELD_INDICES = Object.freeze({
   InCity: 1,
@@ -115,6 +125,13 @@ const DB_FIELD_INDICES = Object.freeze({
   Taxi: 17,
   Return: 18,
   Total: 19,
+  RunningTotal: 19 + CALC_FIELD_INDICES.RunningTotal,
+  GrantType: 19 + CALC_FIELD_INDICES.GrantType,
+  Quarter: 19 + CALC_FIELD_INDICES.Quarter,
+  StreetNumber: 19 + CALC_FIELD_INDICES.StreetNumber,
+  StreetName: 19 + CALC_FIELD_INDICES.StreetName,
+  Unit: 19 + CALC_FIELD_INDICES.Unit,
+  Initials: CALC_FIELD_INDICES.Initials,
 });
 
 const PASTE_FIELD_INDICES = Object.freeze({
@@ -135,6 +152,22 @@ const PASTE_FIELD_INDICES = Object.freeze({
   Taxi: 15,
   Return: 16,
   Total: 17,
+});
+
+const LISTING_FIELD_INDICES = Object.freeze({
+  OrgInitial: 1,
+  StreetNum: 2,
+  StreetName: 3,
+  StreetType: 4,
+  UnitType: 5,
+  UnitNum: 6,
+  City: 7,
+  State: 8,
+  ClientInitial: 9,
+  Q1: 10,
+  Q2: 11,
+  Q3: 12,
+  Q4: 13,
 });
 
 function getAddressReportRange() {
