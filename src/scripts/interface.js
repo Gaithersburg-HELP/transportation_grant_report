@@ -123,7 +123,7 @@ function userRecalculateTotalsAddresses() {
     // NOTE in theory if date is invalid this would display NaN and cause the record to be unreported
     calculatedFields[row][CALC_FIELD_INDICES.Quarter - 1] = getQuarter(database[row][DB_FIELD_INDICES.ApptDate - 1]);
     calculatedFields[row][CALC_FIELD_INDICES.StreetNumber - 1] = address.streetNum;
-    calculatedFields[row][CALC_FIELD_INDICES.StreetName - 1] = address.prefixedStreetName;
+    calculatedFields[row][CALC_FIELD_INDICES.StreetName - 1] = address.prefixedStreetNameWithType;
     calculatedFields[row][CALC_FIELD_INDICES.Unit - 1] = address.unitNum;
     calculatedFields[row][CALC_FIELD_INDICES.Initials - 1] = getInitials(database[row][DB_FIELD_INDICES.Name - 1]);
 

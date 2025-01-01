@@ -125,7 +125,8 @@ function Address(rawAddress) {
       break;
   }
 
-  const [prefixedStreetName, streetType] = rightWordSplit(streetWithoutNum);
+  const [prefixedStreetName, streetTypeLowercase] = rightWordSplit(streetWithoutNum);
+  streetType = streetTypeLowercase.toUpperCase();
 
   let formattedStreetWithUnit = `${streetNum} ${streetWithoutNum}`;
   if (realPostfix !== "") {
@@ -141,6 +142,7 @@ function Address(rawAddress) {
   Object.defineProperties(this, {
     streetNum: { value: streetNum },
     prefixedStreetName: { value: prefixedStreetName },
+    prefixedStreetNameWithType: { value: `${prefixedStreetName} ${streetType}` },
     streetType: { value: streetType }, // drops postfix, following what Gaithersburg database Road_Type field does
     unitType: { value: unitType },
     unitNum: { value: unitNum },
