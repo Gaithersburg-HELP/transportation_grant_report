@@ -11,3 +11,28 @@ function testAddressPrefixPostfix() {
 
   return assertion;
 }
+
+function testQuarter() {
+  let assertion = true;
+  assertion = assertion && getQuarter("07/05/2024") === 1;
+  assertion = assertion && getQuarter("08/05/2024") === 1;
+  assertion = assertion && getQuarter("09/05/2024") === 1;
+  assertion = assertion && getQuarter("10/05/2024") === 2;
+  assertion = assertion && getQuarter("11/05/2024") === 2;
+  assertion = assertion && getQuarter("12/05/2024") === 2;
+  assertion = assertion && getQuarter("1/05/2024") === 3;
+  assertion = assertion && getQuarter("2/05/2024") === 3;
+  assertion = assertion && getQuarter("3/05/2024") === 3;
+  assertion = assertion && getQuarter("4/05/2024") === 4;
+  assertion = assertion && getQuarter("5/05/2024") === 4;
+  assertion = assertion && getQuarter("6/05/2024") === 4;
+
+  return assertion;
+}
+
+function testInitials() {
+  let assertion = true;
+  assertion = assertion && getInitials("Jonathan V'Nai Hypohen-Joseph") === "JVH";
+
+  return assertion;
+}

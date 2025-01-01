@@ -37,6 +37,12 @@ function runAllTests() {
     QUnit.test("testAddressPrefixPostfix", (assert) => {
       assert.true(testAddressPrefixPostfix());
     });
+    QUnit.test("testQuarter", (assert) => {
+      assert.true(testQuarter());
+    });
+    QUnit.test("testInitials", (assert) => {
+      assert.true(testInitials());
+    });
   });
 }
 
