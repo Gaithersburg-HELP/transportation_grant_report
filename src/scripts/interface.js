@@ -59,6 +59,76 @@ function AddressListing(initials, address) {
   };
 }
 
+class CityTotals {
+  constructor() {
+    const blankTotals = { 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0 };
+    this._totalKeys = [
+      "_expenditureProgram",
+      "_expenditureResident",
+      "_undupProgram",
+      "_undupResident",
+      "_dupResidentJobInterview",
+      "_dupResidentHealth",
+      "_dupResidentSocial",
+      "_dupResidentVax",
+    ];
+
+    for (const key of this._totalKeys) {
+      this[key] = JSON.parse(JSON.stringify(blankTotals));
+    }
+
+    this._unduplicated = new Map();
+  }
+
+  output() {
+    const numKeys = this._totalKeys.length;
+    const totals = Array.from({ length: numKeys }, () => Array(4));
+    for (let i = 1; i <= numKeys; i++) {
+      for (let j = 1; j <= 4; j++) {
+        totals[i - 1][j - 1] = this[this._totalKeys[i - 1]][j.toString()];
+      }
+    }
+    return totals;
+  }
+
+  // inCity is Boolean
+  increment(total, quarter, inCity, name, category) {
+    let unduplicated = true;
+    if (this._unduplicated.has(name)) {
+      unduplicated = false;
+    } else {
+      this._unduplicated.set(name, "_");
+    }
+
+    this._expenditureProgram[quarter] += Number(total);
+    if (unduplicated) {
+      this._undupProgram[quarter] += 1;
+    }
+
+    if (inCity) {
+      this._expenditureResident[quarter] += Number(total);
+      if (unduplicated) {
+        this._undupResident[quarter] += 1;
+      }
+
+      switch (category) {
+        case "Job Interview":
+          this._dupResidentJobInterview[quarter] += 1;
+          break;
+        case "Health Appt":
+          this._dupResidentHealth[quarter] += 1;
+          break;
+        case "Social Svc Agcy":
+          this._dupResidentSocial[quarter] += 1;
+          break;
+        case "Vax/Testing":
+          this._dupResidentVax[quarter] += 1;
+          break;
+      }
+    }
+  }
+}
+
 class RunningTotal {
   constructor(cityGrantLimit, countyGrantLimit) {
     this._cityGrantLimit = cityGrantLimit;
@@ -87,6 +157,7 @@ class RunningTotal {
     }
   }
 
+  // inCity is boolean
   increment(total, quarter, inCity) {
     if (total === "") {
       this.runningTotals.push("");
@@ -170,6 +241,7 @@ function userRecalculateTotalsAddresses() {
   const countyGrantLimit = getCountyFundPerQuarterRange().getValue();
   const cityGrantLimit = getCityFundPerQuarterRange().getValue();
   const runningTotal = new RunningTotal(cityGrantLimit, countyGrantLimit);
+  const cityTotals = new CityTotals();
 
   // Map of Name : AddressListing
   const addressListings = new Map();
@@ -186,6 +258,14 @@ function userRecalculateTotalsAddresses() {
       addressListings.get(name).setQuarter(sortedDatabase[row][DB_FIELD_INDICES.Quarter - 1]);
     }
 
+    cityTotals.increment(
+      sortedDatabase[row][DB_FIELD_INDICES.Total - 1],
+      sortedDatabase[row][DB_FIELD_INDICES.Quarter - 1],
+      sortedDatabase[row][DB_FIELD_INDICES.InCity - 1] === "Yes",
+      sortedDatabase[row][DB_FIELD_INDICES.Name - 1],
+      sortedDatabase[row][DB_FIELD_INDICES.Category - 1],
+    );
+
     runningTotal.increment(
       sortedDatabase[row][DB_FIELD_INDICES.Total - 1],
       sortedDatabase[row][DB_FIELD_INDICES.Quarter - 1],
@@ -193,6 +273,9 @@ function userRecalculateTotalsAddresses() {
     );
     row += 1;
   }
+
+  setPlainFormat(getTotalRange().setValues(cityTotals.output()));
+  setCurrencyFormat(getTotalCurrencyRange());
 
   setCurrencyFormat(
     getRangeCol(getDatabaseRange("DatabaseAndCalculated"), DB_FIELD_INDICES.RunningTotal).setValues(

@@ -31,6 +31,10 @@ function runAllTests() {
     QUnit.test("testAll", (assert) => {
       assert.true(testAll());
     });
+
+    QUnit.test("testMaximumValidation", (assert) => {
+      assert.true(testMaximumValidation());
+    });
   });
 
   QUnit.module("Unit", (hooks) => {
