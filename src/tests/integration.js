@@ -16,14 +16,13 @@ function testAll() {
   assertion = assertion && compareTestData("Database", getDatabaseRange(), "TestAll", "DatabaseOutput");
   assertion =
     assertion && compareTestData("Calculated Fields", getCalculatedFieldsRange(), "TestAll", "CalculatedFieldsOutput");
+  assertion = assertion && compareTestData("City Totals", getTotalRange(), "TestAll", "TotalsOutput");
   assertion = assertion && compareTestData("Address Listings", getAddressReportRange(), "TestAll", "AddressOutput");
   assertion =
     assertion && compareTestData("Non City Grant", getCountyReportAddressRange(), "TestAll", "NonCityGrantOutput");
   assertion =
     assertion &&
     compareTestData("Non City Grant Totals", getCountyReportTotalsRange(), "TestAll", "NonCityGrantTotalsOutput");
-
-  // TODO compare totals
 
   clearAll();
   setCurrencyFormat(getCityFundPerQuarterRange().setValue(existingCityFundLimit));
