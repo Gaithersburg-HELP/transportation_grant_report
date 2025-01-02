@@ -43,16 +43,16 @@ function AddressListing(initials, address) {
   this.q4 = false;
   this.setQuarter = (quarter) => {
     switch (quarter) {
-      case 1:
+      case "1":
         this.q1 = true;
         break;
-      case 2:
+      case "2":
         this.q2 = true;
         break;
-      case 3:
+      case "3":
         this.q3 = true;
         break;
-      case 4:
+      case "4":
         this.q4 = true;
         break;
     }
@@ -120,6 +120,22 @@ class RunningTotal {
   }
 }
 
+function setYearFormat(range) {
+  range.setNumberFormat("M/D/YYYY");
+}
+
+function setTimeFormat(range) {
+  range.setNumberFormat("[$-409]h:mm\\ AM/PM");
+}
+
+function setPlainFormat(range) {
+  range.setNumberFormat("@");
+}
+
+function setCurrencyFormat(range) {
+  range.setNumberFormat('"$"#,##0.00');
+}
+
 function userRecalculateTotalsAddresses() {
   const dbLength = getDatabaseRange().getNumRows();
   const database = getDatabaseRange().getValues();
@@ -141,7 +157,7 @@ function userRecalculateTotalsAddresses() {
     row += 1;
   }
 
-  getCalculatedFieldsRange().offset(0, 0, dbLength).setValues(calculatedFields);
+  setPlainFormat(getCalculatedFieldsRange().offset(0, 0, dbLength).setValues(calculatedFields));
 
   getDatabaseRange("DatabaseAndCalculated").sort([
     { column: DB_FIELD_INDICES.Quarter, ascending: true },
@@ -160,13 +176,16 @@ function userRecalculateTotalsAddresses() {
   row = 0;
   while (row < dbLength) {
     const name = sortedDatabase[row][DB_FIELD_INDICES.Name - 1];
-    if (!addressListings.has(name)) {
-      addressListings.set(
-        name,
-        new AddressListing(getInitials(name), new Address(sortedDatabase[row][DB_FIELD_INDICES.Address - 1])),
-      );
+    if (sortedDatabase[row][DB_FIELD_INDICES.InCity - 1] === "Yes") {
+      if (!addressListings.has(name)) {
+        addressListings.set(
+          name,
+          new AddressListing(getInitials(name), new Address(sortedDatabase[row][DB_FIELD_INDICES.Address - 1])),
+        );
+      }
+      addressListings.get(name).setQuarter(sortedDatabase[row][DB_FIELD_INDICES.Quarter - 1]);
     }
-    addressListings.get(name).setQuarter(sortedDatabase[row][DB_FIELD_INDICES.Quarter - 1]);
+
     runningTotal.increment(
       sortedDatabase[row][DB_FIELD_INDICES.Total - 1],
       sortedDatabase[row][DB_FIELD_INDICES.Quarter - 1],
@@ -175,11 +194,15 @@ function userRecalculateTotalsAddresses() {
     row += 1;
   }
 
-  getRangeCol(getDatabaseRange("DatabaseAndCalculated"), DB_FIELD_INDICES.RunningTotal).setValues(
-    transpose([runningTotal.runningTotals]),
+  setCurrencyFormat(
+    getRangeCol(getDatabaseRange("DatabaseAndCalculated"), DB_FIELD_INDICES.RunningTotal).setValues(
+      transpose([runningTotal.runningTotals]),
+    ),
   );
-  getRangeCol(getDatabaseRange("DatabaseAndCalculated"), DB_FIELD_INDICES.GrantType).setValues(
-    transpose([runningTotal.grantTypes]),
+  setPlainFormat(
+    getRangeCol(getDatabaseRange("DatabaseAndCalculated"), DB_FIELD_INDICES.GrantType).setValues(
+      transpose([runningTotal.grantTypes]),
+    ),
   );
 
   const addressListingReport = Array.from({ length: addressListings.size }, () =>
@@ -200,37 +223,33 @@ function userRecalculateTotalsAddresses() {
     addressListingReport[row][LISTING_FIELD_INDICES.City - 1] = "Gaithersburg";
     addressListingReport[row][LISTING_FIELD_INDICES.State - 1] = "MD";
     addressListingReport[row][LISTING_FIELD_INDICES.ClientInitial - 1] = addressListing.initials;
-    addressListingReport[row][LISTING_FIELD_INDICES.Q1 - 1] = addressListing.q1;
-    addressListingReport[row][LISTING_FIELD_INDICES.Q2 - 1] = addressListing.q2;
-    addressListingReport[row][LISTING_FIELD_INDICES.Q3 - 1] = addressListing.q3;
-    addressListingReport[row][LISTING_FIELD_INDICES.Q4 - 1] = addressListing.q4;
+    addressListingReport[row][LISTING_FIELD_INDICES.Q1 - 1] = addressListing.q1 ? "x" : "";
+    addressListingReport[row][LISTING_FIELD_INDICES.Q2 - 1] = addressListing.q2 ? "x" : "";
+    addressListingReport[row][LISTING_FIELD_INDICES.Q3 - 1] = addressListing.q3 ? "x" : "";
+    addressListingReport[row][LISTING_FIELD_INDICES.Q4 - 1] = addressListing.q4 ? "x" : "";
 
     row += 1;
   }
 
+  setPlainFormat(getAddressReportRange().offset(0, 0, addressListingReport.length).setValues(addressListingReport));
+
+  getAddressReportRange().sort([
+    { column: LISTING_FIELD_INDICES.ClientInitial, ascending: true },
+    { column: LISTING_FIELD_INDICES.StreetNum, ascending: true },
+    { column: LISTING_FIELD_INDICES.StreetName, ascending: true },
+    { column: LISTING_FIELD_INDICES.StreetType, ascending: true },
+    { column: LISTING_FIELD_INDICES.UnitNum, ascending: true },
+  ]);
+
   protectDatabase();
 }
-
-function setYearFormat(range) {
-  range.setNumberFormat("M/D/YYYY");
-}
-
-function setTimeFormat(range) {
-  range.setNumberFormat("[$-409]h:mm\\ AM/PM");
-}
-
 function userAddRecords() {
   if (getPasteRange().isBlank()) {
     return;
   }
 
-  // may run into issues comparing and printing dates/times unless formatting is set correctly
-  setYearFormat(getRangeCol(getPasteRange(), PASTE_FIELD_INDICES.ApptDate));
-  setYearFormat(getRangeCol(getPasteRange(), PASTE_FIELD_INDICES.LogDate));
-  setTimeFormat(getRangeCol(getPasteRange(), PASTE_FIELD_INDICES.ApptTime));
-
   if (getDatabaseRange().isBlank()) {
-    getPasteRange().copyTo(getDatabaseRange().getCell(1, DB_FIELD_INDICES.Name), { contentsOnly: true });
+    getPasteRange().copyTo(getDatabaseRange().getCell(1, DB_FIELD_INDICES.Name));
   } else {
     getPasteRange().copyTo(
       getDatabaseRange().offset(getDatabaseRange().getNumRows(), DB_FIELD_INDICES.Name - 1, 1, 1),
@@ -240,13 +259,33 @@ function userAddRecords() {
 
   getPasteRange().clearContent();
 
+  // may run into issues comparing and printing currency/dates/times unless formatting is set correctly
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Name));
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Phone));
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Address));
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Type));
+  setYearFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.ApptDate));
+  setTimeFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.ApptTime));
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.ApptDest));
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Provided));
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Driver));
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Scheduler));
+  setYearFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.LogDate));
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Trip));
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Comments));
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Notes));
+  setCurrencyFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Taxi));
+  setCurrencyFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Return));
+  setCurrencyFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Total));
+
   validateCategorizeDatabase();
 
   userRecalculateTotalsAddresses();
 }
 
 function userClearTotalsAddresses() {
-  getTotalRange().setValue(0);
+  setPlainFormat(getTotalRange().setValue(0));
+  setCurrencyFormat(getTotalCurrencyRange());
   getCalculatedFieldsRange().clearContent();
   getAddressReportRange().clearContent();
   unprotectDatabase();

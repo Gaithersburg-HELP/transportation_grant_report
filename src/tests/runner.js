@@ -17,15 +17,15 @@ function runAllTests() {
     hooks.beforeEach(() => {
       SpreadsheetApp.flush();
       clearAll();
-      getCityFundPerQuarterRange().setValue(50);
-      getCountyFundPerQuarterRange().setValue(50);
+      setCurrencyFormat(getCityFundPerQuarterRange().setValue(50));
+      setCurrencyFormat(getCountyFundPerQuarterRange().setValue(50));
     });
 
     hooks.afterEach(() => {
       SpreadsheetApp.flush();
       clearAll();
-      getCityFundPerQuarterRange().setValue(existingCityFundLimit);
-      getCountyFundPerQuarterRange().setValue(existingCountyFundLimit);
+      setCurrencyFormat(getCityFundPerQuarterRange().setValue(existingCityFundLimit));
+      setCurrencyFormat(getCountyFundPerQuarterRange().setValue(existingCountyFundLimit));
     });
 
     QUnit.test("testAll", (assert) => {
@@ -51,7 +51,7 @@ function findNameIndex(values, name) {
   return values.indexOf(name) + 1;
 }
 
-// Returns range on TESTS sheet from $(testName)$(dataName) to $(End+testName)$(End+dataName)
+// Returns range on TESTS sheet from $(testName)$(dataName) to $(Last row with data or End+testName)$(End+dataName)
 function loadTestDataRange(testName, dataName) {
   const testSheet = getTestSheet();
   const testNames = transpose(testSheet.getRange("A:A").getValues())[0];
@@ -61,10 +61,15 @@ function loadTestDataRange(testName, dataName) {
   const dataColStart = findNameIndex(dataNames[0], dataName);
   const dataColEnd = findNameIndex(dataNames[0], `End${dataName}`);
 
+  const lastRowWithData = testSheet
+    .getRange(dataRowEnd + 1, dataColStart)
+    .getNextDataCell(SpreadsheetApp.Direction.UP)
+    .getRow();
+
   const dataRange = testSheet.getRange(
     dataRowStart,
     dataColStart,
-    dataRowEnd - dataRowStart + 1,
+    lastRowWithData - dataRowStart + 1,
     dataColEnd - dataColStart + 1,
   );
   return dataRange;
@@ -81,7 +86,7 @@ function pasteTestData(testName, dataName, rows = 0, rowStart = 1) {
   testDataRng.copyTo(getPasteRange().getCell(1, 1), { contentsOnly: true });
 }
 
-// Assumes both 2D ranges, drops blank rows at end of actualRange
+// Assumes both 2D ranges
 // Returns 1-based indices, 0 if match
 function compareRanges(actualRange, expectedRange) {
   let errorRowIndex = 0;
@@ -91,18 +96,22 @@ function compareRanges(actualRange, expectedRange) {
   const expectedRangeValues = expectedRange.getValues();
 
   if (actualRange.getWidth() !== expectedRange.getWidth()) {
+    Logger.log(`Actual width ${actualRange.getWidth()} does not match Expected width ${expectedRange.getWidth()}`);
     errorRowIndex = 1;
     errorColIndex = actualRange.getWidth();
-  } else if (actualRange.getSheet().getLastRow() - actualRange.getRow() + 1 !== expectedRange.getNumRows()) {
+  } else if (actualRange.getNumRows() !== expectedRange.getNumRows()) {
+    Logger.log(
+      `Actual height ${actualRange.getNumRows()} does not match Expected height ${expectedRange.getNumRows()}`,
+    );
     errorRowIndex = expectedRangeValues.length + 1;
     errorColIndex = 1;
   } else {
     loopRow: for (let row = 0; row < expectedRangeValues.length; row++) {
       for (let col = 0; col < expectedRangeValues[0].length; col++) {
         if (typeof expectedRangeValues[row][col] === "object") {
-          // convert date to number before comparing
-          expectedRangeValues[row][col] = expectedRangeValues[row][col].valueOf();
-          actualRangeValues[row][col] = actualRangeValues[row][col].valueOf();
+          // convert date to string before comparing
+          expectedRangeValues[row][col] = expectedRangeValues[row][col].toString();
+          actualRangeValues[row][col] = actualRangeValues[row][col].toString();
         }
         if (actualRangeValues[row][col] !== expectedRangeValues[row][col]) {
           Logger.log(`Actual ${actualRangeValues[row][col]} does not match Expected ${expectedRangeValues[row][col]}`);

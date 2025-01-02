@@ -50,6 +50,6 @@ function validateCategorizeDatabase() {
     });
   });
 
-  getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.InCity).setValues(transpose([inCity]));
-  getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Category).setValues(transpose([categories]));
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.InCity).setValues(transpose([inCity])));
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Category).setValues(transpose([categories])));
 }

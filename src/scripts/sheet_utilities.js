@@ -14,10 +14,6 @@ function getAddressReportSheet() {
   return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Address Listings");
 }
 
-function getCountyReportSheet() {
-  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Non-City Grant Clients");
-}
-
 function getTestSheet() {
   return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("TESTS");
 }
@@ -34,8 +30,8 @@ function getTotalRange() {
   return getHomeSheet().getRange("H2:K9");
 }
 
-function getCalculatedFieldsRange() {
-  return getHomeSheet().getRange("T13:Z3000");
+function getTotalCurrencyRange() {
+  return getHomeSheet().getRange("H2:K3");
 }
 
 function removeBlanks(range) {
@@ -45,6 +41,24 @@ function removeBlanks(range) {
     return range.offset(0, 0, 1);
   }
   return range.offset(0, 0, rangeHeight);
+}
+
+function getCalculatedFieldsRange() {
+  return removeBlanks(getHomeSheet().getRange("T13:Z3000"));
+}
+
+function getAddressReportRange() {
+  return removeBlanks(getAddressReportSheet().getRange("A2:M3000"));
+}
+
+function getCountyReportAddressRange() {
+  return removeBlanks(
+    SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Non-City Grant Clients").getRange("A4:R3000"),
+  );
+}
+
+function getCountyReportTotalsRange() {
+  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Non-City Grant Clients").getRange("A2:N2");
 }
 
 // Returns first blank row if range is blank, otherwise returns all pasted rows with data only
@@ -173,14 +187,11 @@ const LISTING_FIELD_INDICES = Object.freeze({
   Q4: 13,
 });
 
-function getAddressReportRange() {
-  return getAddressReportSheet().getRange("A2:M3000");
-}
-
 function clearAll() {
   SpreadsheetApp.flush();
   getPasteRange().clearContent();
-  getTotalRange().setValue(0);
+  setPlainFormat(getTotalRange().setValue(0));
+  setCurrencyFormat(getTotalCurrencyRange());
   getDatabaseRange().clearContent();
   getAddressReportRange().clearContent();
   getCalculatedFieldsRange().clearContent();
