@@ -208,6 +208,12 @@ function setCurrencyFormat(range) {
 }
 
 function userRecalculateTotalsAddresses() {
+  SpreadsheetApp.getActive().toast(
+    `Beginning total calculation and address listings report generation...`,
+    `Progress`,
+    -1,
+  );
+
   const dbLength = getDatabaseRange().getNumRows();
   const database = getDatabaseRange().getValues();
 
@@ -325,11 +331,19 @@ function userRecalculateTotalsAddresses() {
   ]);
 
   protectDatabase();
+
+  SpreadsheetApp.getActive().toast(
+    `Script is finished! You can close this message and edit this workbook.`,
+    `Progress`,
+    -1,
+  );
 }
 function userAddRecords() {
   if (getPasteRange().isBlank()) {
     return;
   }
+
+  SpreadsheetApp.getActive().toast(`Adding records...`, `Progress`, -1);
 
   if (getDatabaseRange().isBlank()) {
     getPasteRange().copyTo(getDatabaseRange().getCell(1, DB_FIELD_INDICES.Name));

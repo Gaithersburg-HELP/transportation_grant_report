@@ -1,4 +1,6 @@
 function validateCategorizeDatabase() {
+  SpreadsheetApp.getActive().toast(`Beginning validation and categorization...`, `Progress`, -1);
+
   const categories = [];
   const addressValidations = new Map();
 
@@ -52,4 +54,6 @@ function validateCategorizeDatabase() {
 
   setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.InCity).setValues(transpose([inCity])));
   setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Category).setValues(transpose([categories])));
+
+  SpreadsheetApp.getActive().toast(`Finished validation and categorization!`, `Progress`, -1);
 }

@@ -34,13 +34,27 @@ function testAll() {
 function testMaximumValidation() {
   // maximum number of rides/month is somewhere around 140, 140*12 = 1680 addresses
   // url fetchall maxes out at 2199: https://stackoverflow.com/questions/67580847/maximum-number-of-request-parameters-for-fetchall
+  // Replace N Frederick with S Frederick to test response time on Gaithersburg servers with no caching
+
+  // Timing results:
+  // Adding records: 10 s (I think probably due to formatting)
+  // Validation/categorization: 1 min 50 s for first attempt
+  // Validation/categorization: 1 min 40 s for reattempt
+  // Totals: 40 s
 
   const numRecords = 1700;
   const records = [];
 
   for (let x = 1; x <= numRecords; x++) {
     const record = [];
-    record[PASTE_FIELD_INDICES.Address - 1] = `${x} N Frederick Ave , Gaithersburg, MD`;
+    // about 66% of records have units, about 33% don't
+    // this matters for testing how much address reattempts slow down validation
+    if (x % 3 === 0) {
+      record[PASTE_FIELD_INDICES.Address - 1] = `${x} N Frederick Ave , Gaithersburg, MD`;
+    } else {
+      record[PASTE_FIELD_INDICES.Address - 1] = `${x} N Frederick Ave Ste 100, Gaithersburg, MD`;
+    }
+
     record[PASTE_FIELD_INDICES.ApptDate - 1] = "03/03/2024";
     record[PASTE_FIELD_INDICES.ApptDest - 1] = "The Moon";
     record[PASTE_FIELD_INDICES.ApptTime - 1] = "3:00 AM";
@@ -67,9 +81,10 @@ function testMaximumValidation() {
   userAddRecords();
 
   let assertion = true;
-  assertion = assertion && getDatabaseRange().getCell(100, DB_FIELD_INDICES.InCity).getValue() === "Yes";
-  assertion = assertion && getDatabaseRange().getCell(481, DB_FIELD_INDICES.InCity).getValue() === "Yes";
-  assertion = assertion && getDatabaseRange().getCell(990, DB_FIELD_INDICES.InCity).getValue() === "Yes";
+  // These assertions work for both N and S Frederick
+  assertion = assertion && getDatabaseRange().getCell(101, DB_FIELD_INDICES.InCity).getValue() === "Yes";
+  assertion = assertion && getDatabaseRange().getCell(421, DB_FIELD_INDICES.InCity).getValue() === "Yes";
+  assertion = assertion && getDatabaseRange().getCell(800, DB_FIELD_INDICES.InCity).getValue() === "Yes";
   assertion = assertion && getDatabaseRange().getCell(numRecords, DB_FIELD_INDICES.InCity).getValue() === "Yes";
 
   clearAll();

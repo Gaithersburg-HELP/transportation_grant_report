@@ -156,6 +156,30 @@ function AddressValidation(row) {
   this.inCity = false;
 }
 
+// Sends requests in chunks of 200
+// From https://davidmeindl.com/service-invoked-too-many-times-in-a-short-time-urlfetch/
+// Toast code inspired by https://www.reddit.com/r/GoogleAppsScript/comments/18hj450/way_to_pull_execution_time_from_apps_script_to/
+function sendChunkedRequests(requests, reattempt = false) {
+  const startTime = new Date();
+
+  // Response time for fetchAll with 200 seems to be about 5 - 15 seconds, depending on time of day?
+  // 200 is the maximum chunk size without hitting rate limit
+  // Note there is a daily quota as well: https://developers.google.com/apps-script/guides/services/quotas
+  const chunkSize = 200;
+  const responses = [];
+  for (let i = 0; i < requests.length; i += chunkSize) {
+    const chunk = requests.slice(i, i + chunkSize);
+    responses.push(...UrlFetchApp.fetchAll(chunk));
+
+    SpreadsheetApp.getActive().toast(
+      `${reattempt ? "Re" : ""}Validated ${Math.min(i + chunkSize, requests.length)} records total after ${((new Date().getTime() - startTime.getTime()) / 1000).toFixed(0)} seconds...`,
+      `Progress`,
+      -1,
+    );
+  }
+  return responses;
+}
+
 // Expects HTTPResponse, logs to output and returns false if invalid, otherwise returns true
 function isValidResponse(response) {
   const code = response.getResponseCode();
@@ -191,7 +215,7 @@ function validateAddresses(addressValidations) {
   const reattemptValidationRequests = [];
   const reattemptAddressesInRequestOrder = [];
 
-  const responses = UrlFetchApp.fetchAll(requests);
+  const responses = sendChunkedRequests(requests);
   responses.forEach((response, index) => {
     const result = JSON.parse(response.getContentText());
     if (!isValidResponse(response)) {
@@ -200,25 +224,25 @@ function validateAddresses(addressValidations) {
       if (result.features.length > 0) {
         addressValidations.get(addressesInRequestOrder[index]).inCity = true;
       } else {
-        // Reattempt validation with no unit since some addresses like Booth St don't have units
-        // in Gaithersburg database
-        const addressNoUnit = new Address(addressesInRequestOrder[index]).formattedStreetWithoutUnit.replaceAll(
-          "'",
-          "''",
-        );
-        const url =
-          `https://maps.gaithersburgmd.gov/arcgis/rest/services/layers/GaithersburgCityAddresses/` +
-          `MapServer/0/query?` +
-          `f=json&returnGeometry=false&` +
-          `outFields=Full_Address,Address_Number,Road_Prefix_Dir,Road_Name,Road_Type,Road_Post_Dir,Unit_Type,Unit_Number,Zip_Code&` +
-          `where=Core_Address%20LIKE%20%27${encodeURI(addressNoUnit)}%27`;
-        reattemptValidationRequests.push(url);
-        reattemptAddressesInRequestOrder.push(addressesInRequestOrder[index]);
+        // Reattempt validation with no unit if address has unit
+        // since some addresses like Booth St don't have units in Gaithersburg database
+        const address = new Address(addressesInRequestOrder[index]);
+        if (address.formattedStreetWithUnit !== address.formattedStreetWithoutUnit) {
+          const addressNoUnit = address.formattedStreetWithoutUnit.replaceAll("'", "''");
+          const url =
+            `https://maps.gaithersburgmd.gov/arcgis/rest/services/layers/GaithersburgCityAddresses/` +
+            `MapServer/0/query?` +
+            `f=json&returnGeometry=false&` +
+            `outFields=Full_Address,Address_Number,Road_Prefix_Dir,Road_Name,Road_Type,Road_Post_Dir,Unit_Type,Unit_Number,Zip_Code&` +
+            `where=Core_Address%20LIKE%20%27${encodeURI(addressNoUnit)}%27`;
+          reattemptValidationRequests.push(url);
+          reattemptAddressesInRequestOrder.push(addressesInRequestOrder[index]);
+        }
       }
     }
   });
 
-  const reattemptResponses = UrlFetchApp.fetchAll(reattemptValidationRequests);
+  const reattemptResponses = sendChunkedRequests(reattemptValidationRequests, true);
   reattemptResponses.forEach((reattemptResponse, index) => {
     const result = JSON.parse(reattemptResponse.getContentText());
 
