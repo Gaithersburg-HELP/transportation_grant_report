@@ -24,6 +24,39 @@ function testAll() {
     assertion &&
     compareTestData("Non City Grant Totals", getCountyReportTotalsRange(), "TestAll", "NonCityGrantTotalsOutput");
 
+  // Test database editing
+  userClearTotalsAddresses();
+
+  // clearContent() is the same as user hitting delete in terms of sorting
+  // (blank rows will be sorted to the bottom) and also won't be counted when calling getLastRow()
+  getDatabaseRange().offset(3, 0, 1).clearContent();
+
+  // Modify last two records
+  getDatabaseRange().getCell(27, DB_FIELD_INDICES.InCity).setValue("Discard");
+  getDatabaseRange().getCell(28, DB_FIELD_INDICES.InCity).setValue("Yes");
+
+  getDatabaseRange().getCell(2, DB_FIELD_INDICES.Category).setValue("Social Svc Agcy");
+
+  getDatabaseRange().getCell(8, DB_FIELD_INDICES.ApptDate).setValue("2/14/2024");
+
+  getDatabaseRange().getCell(11, DB_FIELD_INDICES.Address).setValue("9 North Summit Drive Apt 102 , Gaithersburg, MD");
+
+  getDatabaseRange().getCell(3, DB_FIELD_INDICES.Total).setValue("36.50");
+
+  userRecalculateTotalsAddresses();
+
+  assertion = assertion && compareTestData("Database", getDatabaseRange(), "TestAllEdit", "DatabaseOutput");
+  assertion =
+    assertion &&
+    compareTestData("Calculated Fields", getCalculatedFieldsRange(), "TestAllEdit", "CalculatedFieldsOutput");
+  assertion = assertion && compareTestData("City Totals", getTotalRange(), "TestAllEdit", "TotalsOutput");
+  assertion = assertion && compareTestData("Address Listings", getAddressReportRange(), "TestAllEdit", "AddressOutput");
+  assertion =
+    assertion && compareTestData("Non City Grant", getCountyReportAddressRange(), "TestAllEdit", "NonCityGrantOutput");
+  assertion =
+    assertion &&
+    compareTestData("Non City Grant Totals", getCountyReportTotalsRange(), "TestAllEdit", "NonCityGrantTotalsOutput");
+
   clearAll();
   setCurrencyFormat(getCityFundPerQuarterRange().setValue(existingCityFundLimit));
   setCurrencyFormat(getCountyFundPerQuarterRange().setValue(existingCountyFundLimit));
