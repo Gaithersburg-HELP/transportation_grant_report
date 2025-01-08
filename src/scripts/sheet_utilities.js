@@ -63,7 +63,7 @@ function getCountyReportTotalsRange() {
 
 // Returns first blank row if range is blank, otherwise returns all pasted rows with data only
 function getPasteRange() {
-  return removeBlanks(getPasteSheet().getRange("A7:Q2000"));
+  return removeBlanks(getPasteSheet().getRange("A26:Q2000"));
 }
 
 function getDatabaseRangeWithBlanks(rangeName) {

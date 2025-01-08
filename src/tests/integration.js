@@ -113,12 +113,24 @@ function testMaximumValidation() {
   SpreadsheetApp.flush();
   userAddRecords();
 
+  const names = transpose(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Name).getValues())[0];
+
   let assertion = true;
   // These assertions work for both N and S Frederick
-  assertion = assertion && getDatabaseRange().getCell(101, DB_FIELD_INDICES.InCity).getValue() === "Yes";
-  assertion = assertion && getDatabaseRange().getCell(421, DB_FIELD_INDICES.InCity).getValue() === "Yes";
-  assertion = assertion && getDatabaseRange().getCell(800, DB_FIELD_INDICES.InCity).getValue() === "Yes";
-  assertion = assertion && getDatabaseRange().getCell(numRecords, DB_FIELD_INDICES.InCity).getValue() === "Yes";
+  assertion =
+    assertion &&
+    getDatabaseRange().getCell(findNameIndex(names, "Client 101"), DB_FIELD_INDICES.InCity).getValue() === "Yes";
+  assertion =
+    assertion &&
+    getDatabaseRange().getCell(findNameIndex(names, "Client 421"), DB_FIELD_INDICES.InCity).getValue() === "Yes";
+  assertion =
+    assertion &&
+    getDatabaseRange().getCell(findNameIndex(names, "Client 800"), DB_FIELD_INDICES.InCity).getValue() === "Yes";
+  assertion =
+    assertion &&
+    getDatabaseRange()
+      .getCell(findNameIndex(names, `Client ${numRecords}`), DB_FIELD_INDICES.InCity)
+      .getValue() === "Yes";
 
   clearAll();
 

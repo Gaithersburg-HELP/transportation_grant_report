@@ -390,3 +390,27 @@ function userClearTotalsAddresses() {
   getAddressReportRange().clearContent();
   unprotectDatabase();
 }
+
+// From https://stackoverflow.com/a/69015165/13342792
+function openUrl(url) {
+  const html = `<html>
+<a id='url' href="${url}">Click here</a>
+  <script>
+     var winRef = window.open("${url}");
+     winRef ? google.script.host.close() : window.alert('Configure browser to allow popup to redirect you to ${url}') ;
+     </script>
+</html>`;
+  const htmlOutput = HtmlService.createHtmlOutput(html).setWidth(250).setHeight(300);
+  SpreadsheetApp.getUi().showModalDialog(htmlOutput, `Opening address lookup page in new tab...`);
+}
+
+function userLookupAddress() {
+  const address = new Address(
+    getHomeSheet()
+      .getRange(SpreadsheetApp.getSelection().getCurrentCell().getRow(), DB_FIELD_INDICES.Address)
+      .getValue(),
+  );
+  openUrl(
+    `https://maps.gaithersburgmd.gov/AddressSearch/index.html?address=${address.formattedStreetWithoutUnit.replace(" ", "+")}`,
+  );
+}
