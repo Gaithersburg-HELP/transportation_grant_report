@@ -66,6 +66,8 @@ function loadTestDataRange(testName, dataName) {
   const dataColStart = findNameIndex(dataNames[0], dataName);
   const dataColEnd = findNameIndex(dataNames[0], `End${dataName}`);
 
+  // getNextDataCell will throw an exception if the column is hidden
+  // see https://issuetracker.google.com/issues/171281549
   const lastRowWithData = testSheet
     .getRange(dataRowEnd + 1, dataColStart)
     .getNextDataCell(SpreadsheetApp.Direction.UP)

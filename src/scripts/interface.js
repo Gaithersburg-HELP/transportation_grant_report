@@ -214,6 +214,9 @@ function userRecalculateTotalsAddresses() {
     -1,
   );
 
+  // Sort blank rows to the bottom where they will be forgotten
+  getDatabaseRange("DatabaseAndCalculated").sort([{ column: DB_FIELD_INDICES.InCity, ascending: false }]);
+
   const dbLength = getDatabaseRange().getNumRows();
   const database = getDatabaseRange().getValues();
 
