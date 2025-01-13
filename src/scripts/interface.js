@@ -346,6 +346,24 @@ function userAddRecords() {
     return;
   }
 
+  // give warning if any record with Provided = Taxi and Total$ is blank
+  const pastedValues = getPasteRange().getValues();
+  for (let i = 0; i < pastedValues.length; i++) {
+    if (
+      pastedValues[i][PASTE_FIELD_INDICES.Provided - 1] === "Taxi" &&
+      pastedValues[i][PASTE_FIELD_INDICES.Total - 1] === ""
+    ) {
+      const response = SpreadsheetApp.getUi().alert(
+        `Record in row ${getPasteRange().getRow() + i} is set to 'Taxi' but has no total. Proceed anyway?`,
+        SpreadsheetApp.getUi().ButtonSet.YES_NO,
+      );
+      if (response === SpreadsheetApp.getUi().Button.NO) {
+        return;
+      }
+      break;
+    }
+  }
+
   SpreadsheetApp.getActive().toast(`Adding records...`, `Progress`, -1);
 
   if (getDatabaseRange().isBlank()) {
