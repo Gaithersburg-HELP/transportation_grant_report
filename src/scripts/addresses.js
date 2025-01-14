@@ -35,6 +35,7 @@ function Address(rawAddress) {
   rawStreetWithUnit = cleanString(rawStreetWithUnit);
 
   // as of 12/26/24 only unit types in Gaithersburg are Unit, Bldg, Fl, Ste, Apt, so ignore other designators
+  // sometimes room is added by coordinators in e.g. hotels
   rawStreetWithUnit = rawStreetWithUnit
     .replaceAll("Building", "Bldg")
     .replaceAll("Floor", "Fl")
@@ -45,7 +46,8 @@ function Address(rawAddress) {
     .replaceAll("Apt #", "Apt ")
     .replaceAll("Apt#", "Apt ")
     .replaceAll("# ", "Apt ")
-    .replaceAll("#", "Apt");
+    .replaceAll("#", "Apt")
+    .replaceAll("Room ", "Rm ");
 
   // Gaithersburg has O'Neill and Odend'hal, sometimes misspelled as Oneill and Oneil and Odendhal
   // Mccausland Pl renamed to Prism Pl
@@ -57,13 +59,14 @@ function Address(rawAddress) {
   let street = rawStreetWithUnit;
   let unitType = "";
   let unitNum = "";
-  for (const possibleUnitType of ["Apt ", "Bldg ", "Fl ", "Ste "]) {
+  // Room should be last in case of e.g. Bldg 1 Rm 1
+  for (const possibleUnitType of ["Apt ", "Unit ", "Bldg ", "Fl ", "Ste ", "Rm "]) {
     const unitTypeIndex = rawStreetWithUnit.indexOf(possibleUnitType);
     if (unitTypeIndex !== -1) {
       street = rawStreetWithUnit.slice(0, Math.max(0, unitTypeIndex));
       const splitUnit = rawStreetWithUnit.slice(Math.max(0, unitTypeIndex)).split(" ");
       unitType = splitUnit.shift();
-      // possibility of 3 words e.g. 103 Rm 1
+      // possibility of 3 words e.g. 103 Fl 1
       unitNum = splitUnit.join(" "); // [].join(" ") returns ""
       break;
     }

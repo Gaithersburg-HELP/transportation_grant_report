@@ -12,6 +12,28 @@ function testAddressPrefixPostfix() {
   return assertion;
 }
 
+function testAddressSplit() {
+  let assertion = true;
+
+  const roomAddress = new Address("497 Quince Orchard Road Room 205 , Gaithersburg, MD");
+  assertion = assertion && roomAddress.streetNum === "497";
+  assertion = assertion && roomAddress.prefixedStreetName === "Quince Orchard";
+  assertion = assertion && roomAddress.streetType === "RD";
+  assertion = assertion && roomAddress.unitType === "Rm";
+  assertion = assertion && roomAddress.unitNum === "205";
+  assertion = assertion && roomAddress.formattedStreetWithUnit === "497 Quince Orchard Rd Rm 205";
+
+  const unitAddress = new Address("1071 Hillside Lake Terrace Unit 1302 , Gaithersburg, MD");
+  assertion = assertion && unitAddress.streetNum === "1071";
+  assertion = assertion && unitAddress.prefixedStreetName === "Hillside Lake";
+  assertion = assertion && unitAddress.streetType === "TER";
+  assertion = assertion && unitAddress.unitType === "Unit";
+  assertion = assertion && unitAddress.unitNum === "1302";
+  assertion = assertion && unitAddress.formattedStreetWithUnit === "1071 Hillside Lake Ter Unit 1302";
+
+  return assertion;
+}
+
 function testQuarter() {
   let assertion = true;
   assertion = assertion && getQuarter("07/05/2024") === 1;
