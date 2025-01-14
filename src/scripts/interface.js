@@ -67,17 +67,21 @@ class CityTotals {
       "_expenditureResident",
       "_undupProgram",
       "_undupResident",
-      "_dupResidentJobInterview",
-      "_dupResidentHealth",
-      "_dupResidentSocial",
-      "_dupResidentVax",
+      "_undupResidentJobInterview",
+      "_undupResidentHealth",
+      "_undupResidentSocial",
+      "_undupResidentVax",
     ];
 
     for (const key of this._totalKeys) {
       this[key] = JSON.parse(JSON.stringify(blankTotals));
     }
 
-    this._unduplicated = new Map();
+    this._unduplicatedMap = new Map();
+    this._undupResidentJobInterviewMap = new Map();
+    this._undupResidentHealthMap = new Map();
+    this._undupResidentSocialMap = new Map();
+    this._undupResidentVaxMap = new Map();
   }
 
   output() {
@@ -85,20 +89,25 @@ class CityTotals {
     const totals = Array.from({ length: numKeys }, () => Array(4));
     for (let i = 1; i <= numKeys; i++) {
       for (let j = 1; j <= 4; j++) {
-        totals[i - 1][j - 1] = this[this._totalKeys[i - 1]][j.toString()];
+        const key = this._totalKeys[i - 1];
+        totals[i - 1][j - 1] = this[key][j.toString()];
       }
     }
     return totals;
   }
 
+  static _setUnduplicated(map, name) {
+    if (map.has(name)) {
+      return false;
+    } 
+      map.set(name, "_");
+      return true;
+    
+  }
+
   // inCity is Boolean
   increment(total, quarter, inCity, name, category) {
-    let unduplicated = true;
-    if (this._unduplicated.has(name)) {
-      unduplicated = false;
-    } else {
-      this._unduplicated.set(name, "_");
-    }
+    const unduplicated = _setUnduplicated(this._unduplicatedMap, name);
 
     this._expenditureProgram[quarter] += Number(total);
     if (unduplicated) {
@@ -113,16 +122,24 @@ class CityTotals {
 
       switch (category) {
         case "Job Interview":
-          this._dupResidentJobInterview[quarter] += 1;
+          if (_setUnduplicated(this._undupResidentJobInterviewMap, name)) {
+            this._undupResidentJobInterview[quarter] += 1;
+          }
           break;
         case "Health Appt":
-          this._dupResidentHealth[quarter] += 1;
+          if (_setUnduplicated(this._undupResidentHealthMap, name)) {
+            this._undupResidentHealth[quarter] += 1;
+          }
           break;
         case "Social Svc Agcy":
-          this._dupResidentSocial[quarter] += 1;
+          if (_setUnduplicated(this._undupResidentSocialMap, name)) {
+            this._undupResidentSocial[quarter] += 1;
+          }
           break;
         case "Vax/Testing":
-          this._dupResidentVax[quarter] += 1;
+          if (_setUnduplicated(this._undupResidentVaxMap, name)) {
+            this._undupResidentVax[quarter] += 1;
+          }
           break;
       }
     }
@@ -359,8 +376,9 @@ function userAddRecords() {
       );
       if (response === SpreadsheetApp.getUi().Button.NO) {
         return;
-      }
-      break;
+      } 
+        break;
+      
     }
   }
 
