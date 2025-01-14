@@ -19,6 +19,7 @@ export default [
       "no-undef": "off",
       "no-labels": "off",
       "default-case": "off",
+      "no-underscore-dangle": "off",
     },
   },
 ];

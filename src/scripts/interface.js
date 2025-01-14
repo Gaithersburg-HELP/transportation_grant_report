@@ -99,15 +99,14 @@ class CityTotals {
   static _setUnduplicated(map, name) {
     if (map.has(name)) {
       return false;
-    } 
-      map.set(name, "_");
-      return true;
-    
+    }
+    map.set(name, "_");
+    return true;
   }
 
   // inCity is Boolean
   increment(total, quarter, inCity, name, category) {
-    const unduplicated = _setUnduplicated(this._unduplicatedMap, name);
+    const unduplicated = CityTotals._setUnduplicated(this._unduplicatedMap, name);
 
     this._expenditureProgram[quarter] += Number(total);
     if (unduplicated) {
@@ -122,22 +121,22 @@ class CityTotals {
 
       switch (category) {
         case "Job Interview":
-          if (_setUnduplicated(this._undupResidentJobInterviewMap, name)) {
+          if (CityTotals._setUnduplicated(this._undupResidentJobInterviewMap, name)) {
             this._undupResidentJobInterview[quarter] += 1;
           }
           break;
         case "Health Appt":
-          if (_setUnduplicated(this._undupResidentHealthMap, name)) {
+          if (CityTotals._setUnduplicated(this._undupResidentHealthMap, name)) {
             this._undupResidentHealth[quarter] += 1;
           }
           break;
         case "Social Svc Agcy":
-          if (_setUnduplicated(this._undupResidentSocialMap, name)) {
+          if (CityTotals._setUnduplicated(this._undupResidentSocialMap, name)) {
             this._undupResidentSocial[quarter] += 1;
           }
           break;
         case "Vax/Testing":
-          if (_setUnduplicated(this._undupResidentVaxMap, name)) {
+          if (CityTotals._setUnduplicated(this._undupResidentVaxMap, name)) {
             this._undupResidentVax[quarter] += 1;
           }
           break;
@@ -358,27 +357,28 @@ function userRecalculateTotalsAddresses() {
     -1,
   );
 }
-function userAddRecords() {
+function userAddRecords(skipWarning = false) {
   if (getPasteRange().isBlank()) {
     return;
   }
 
-  // give warning if any record with Provided = Taxi and Total$ is blank
-  const pastedValues = getPasteRange().getValues();
-  for (let i = 0; i < pastedValues.length; i++) {
-    if (
-      pastedValues[i][PASTE_FIELD_INDICES.Provided - 1] === "Taxi" &&
-      pastedValues[i][PASTE_FIELD_INDICES.Total - 1] === ""
-    ) {
-      const response = SpreadsheetApp.getUi().alert(
-        `Record in row ${getPasteRange().getRow() + i} is set to 'Taxi' but has no total. Proceed anyway?`,
-        SpreadsheetApp.getUi().ButtonSet.YES_NO,
-      );
-      if (response === SpreadsheetApp.getUi().Button.NO) {
-        return;
-      } 
+  if (!skipWarning) {
+    // give warning if any record with Provided = Taxi and Total$ is blank
+    const pastedValues = getPasteRange().getValues();
+    for (let i = 0; i < pastedValues.length; i++) {
+      if (
+        pastedValues[i][PASTE_FIELD_INDICES.Provided - 1] === "Taxi" &&
+        pastedValues[i][PASTE_FIELD_INDICES.Total - 1] === ""
+      ) {
+        const response = SpreadsheetApp.getUi().alert(
+          `Record in row ${getPasteRange().getRow() + i} is set to 'Taxi' but has no total. Proceed anyway?`,
+          SpreadsheetApp.getUi().ButtonSet.YES_NO,
+        );
+        if (response === SpreadsheetApp.getUi().Button.NO) {
+          return;
+        }
         break;
-      
+      }
     }
   }
 

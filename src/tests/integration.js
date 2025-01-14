@@ -8,10 +8,10 @@ function testAll() {
 
   // Test multiple runs of pasting and adding
   pasteTestData("TestAll", "Input", 4);
-  userAddRecords();
+  userAddRecords(true);
 
   pasteTestData("TestAll", "Input", 24, 5);
-  userAddRecords();
+  userAddRecords(true);
 
   assertion = assertion && compareTestData("Database", getDatabaseRange(), "TestAll", "DatabaseOutput");
   assertion =
@@ -111,7 +111,7 @@ function testMaximumValidation() {
   getPasteRange().getCell(numRecords, PASTE_FIELD_INDICES.Address).setValue("31 S Summit Ave , Gaithersburg, MD");
 
   SpreadsheetApp.flush();
-  userAddRecords();
+  userAddRecords(true);
 
   const names = transpose(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.Name).getValues())[0];
 
