@@ -76,7 +76,22 @@ function testAll() {
 function testOverage() {
   const { existingCityFundLimit, existingCountyFundLimit } = testSetup();
 
-  const assertion = true;
+  let assertion = true;
+
+  pasteTestData("TestOverage", "Input");
+  userAddRecords(true);
+
+  assertion = assertion && compareTestData("Database", getDatabaseRange(), "TestOverage", "DatabaseOutput");
+  assertion =
+    assertion &&
+    compareTestData("Calculated Fields", getCalculatedFieldsRange(), "TestOverage", "CalculatedFieldsOutput");
+  assertion =
+    assertion && compareTestData("Non City Grant", getCountyReportAddressRange(), "TestOverage", "NonCityGrantOutput");
+  assertion =
+    assertion && compareTestData("City Overages", getCityOveragePerQuarterRange(), "TestOverage", "CityOverageOutput");
+  assertion =
+    assertion &&
+    compareTestData("County Overages", getCountyOveragePerQuarterRange(), "TestOverage", "CountyOverageOutput");
 
   testTeardown(existingCityFundLimit, existingCountyFundLimit);
 
@@ -86,7 +101,29 @@ function testOverage() {
 function testOverageImmediate() {
   const { existingCityFundLimit, existingCountyFundLimit } = testSetup();
 
-  const assertion = true;
+  let assertion = true;
+
+  pasteTestData("TestOverageImmediate", "Input");
+  userAddRecords(true);
+
+  assertion = assertion && compareTestData("Database", getDatabaseRange(), "TestOverageImmediate", "DatabaseOutput");
+  assertion =
+    assertion &&
+    compareTestData("Calculated Fields", getCalculatedFieldsRange(), "TestOverageImmediate", "CalculatedFieldsOutput");
+  assertion =
+    assertion &&
+    compareTestData("Non City Grant", getCountyReportAddressRange(), "TestOverageImmediate", "NonCityGrantOutput");
+  assertion =
+    assertion &&
+    compareTestData("City Overages", getCityOveragePerQuarterRange(), "TestOverageImmediate", "CityOverageOutput");
+  assertion =
+    assertion &&
+    compareTestData(
+      "County Overages",
+      getCountyOveragePerQuarterRange(),
+      "TestOverageImmediate",
+      "CountyOverageOutput",
+    );
 
   testTeardown(existingCityFundLimit, existingCountyFundLimit);
   return assertion;
