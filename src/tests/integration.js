@@ -1,8 +1,5 @@
 function testAll() {
-  const existingCityFundLimit = getCityFundPerQuarterRange().getValue();
-  const existingCountyFundLimit = getCountyFundPerQuarterRange().getValue();
-  setCurrencyFormat(getCityFundPerQuarterRange().setValue(50));
-  setCurrencyFormat(getCountyFundPerQuarterRange().setValue(50));
+  const { existingCityFundLimit, existingCountyFundLimit } = testSetup();
 
   let assertion = true;
 
@@ -71,10 +68,27 @@ function testAll() {
     assertion &&
     compareTestData("County Overages", getCountyOveragePerQuarterRange(), "TestAllEdit", "CountyOverageOutput");
 
-  clearAll();
-  setCurrencyFormat(getCityFundPerQuarterRange().setValue(existingCityFundLimit));
-  setCurrencyFormat(getCountyFundPerQuarterRange().setValue(existingCountyFundLimit));
+  testTeardown(existingCityFundLimit, existingCountyFundLimit);
 
+  return assertion;
+}
+
+function testOverage() {
+  const { existingCityFundLimit, existingCountyFundLimit } = testSetup();
+
+  const assertion = true;
+
+  testTeardown(existingCityFundLimit, existingCountyFundLimit);
+
+  return assertion;
+}
+
+function testOverageImmediate() {
+  const { existingCityFundLimit, existingCountyFundLimit } = testSetup();
+
+  const assertion = true;
+
+  testTeardown(existingCityFundLimit, existingCountyFundLimit);
   return assertion;
 }
 

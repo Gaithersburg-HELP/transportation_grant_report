@@ -2,9 +2,6 @@
 // Only this runner function loads QUnit to check if tests return true
 // Search for "failed" in console log to find failing tests
 function runAllTests() {
-  const existingCityFundLimit = getCityFundPerQuarterRange().getValue();
-  const existingCountyFundLimit = getCountyFundPerQuarterRange().getValue();
-
   QUnit.on("runEnd", (runEnd) => {
     Logger.log(JSON.stringify(runEnd, null, " "));
   });
@@ -14,22 +11,16 @@ function runAllTests() {
   QUnit.start();
 
   QUnit.module("Integration", (hooks) => {
-    hooks.beforeEach(() => {
-      SpreadsheetApp.flush();
-      clearAll();
-      setCurrencyFormat(getCityFundPerQuarterRange().setValue(50));
-      setCurrencyFormat(getCountyFundPerQuarterRange().setValue(50));
-    });
-
-    hooks.afterEach(() => {
-      SpreadsheetApp.flush();
-      clearAll();
-      setCurrencyFormat(getCityFundPerQuarterRange().setValue(existingCityFundLimit));
-      setCurrencyFormat(getCountyFundPerQuarterRange().setValue(existingCountyFundLimit));
-    });
-
     QUnit.test("testAll", (assert) => {
       assert.true(testAll());
+    });
+
+    QUnit.test("testOverage", (assert) => {
+      assert.true(testOverage());
+    });
+
+    QUnit.test("testOverageImmediate", (assert) => {
+      assert.true(testOverageImmediate());
     });
 
     /* only run this when you need to to avoid hitting daily quota
@@ -49,6 +40,24 @@ function runAllTests() {
       assert.true(testInitials());
     });
   });
+}
+
+function testSetup() {
+  const existingCityFundLimit = getCityFundPerQuarterRange().getValue();
+  const existingCountyFundLimit = getCountyFundPerQuarterRange().getValue();
+
+  SpreadsheetApp.flush();
+  clearAll();
+  setCurrencyFormat(getCityFundPerQuarterRange().setValue(50));
+  setCurrencyFormat(getCountyFundPerQuarterRange().setValue(50));
+  return { existingCityFundLimit, existingCountyFundLimit };
+}
+
+function testTeardown(existingCityFundLimit, existingCountyFundLimit) {
+  SpreadsheetApp.flush();
+  clearAll();
+  setCurrencyFormat(getCityFundPerQuarterRange().setValue(existingCityFundLimit));
+  setCurrencyFormat(getCountyFundPerQuarterRange().setValue(existingCountyFundLimit));
 }
 
 // Given an array of values, finds the one-based index of value which matches provided name
