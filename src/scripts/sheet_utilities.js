@@ -26,6 +26,20 @@ function getCountyFundPerQuarterRange() {
   return getHomeSheet().getRange("C11");
 }
 
+function getCityOveragePerQuarterRange() {
+  return getHomeSheet().getRange("E10:G10");
+}
+
+function getCountyOveragePerQuarterRange() {
+  return getHomeSheet().getRange("E11:G11");
+}
+
+const OVERAGE_FIELD_INDICES = Object.freeze({
+  Q2: 1,
+  Q3: 2,
+  Q4: 3,
+});
+
 function getTotalRange() {
   return getHomeSheet().getRange("H2:K9");
 }
@@ -195,4 +209,6 @@ function clearAll() {
   getDatabaseRange().clearContent();
   getAddressReportRange().clearContent();
   getCalculatedFieldsRange().clearContent();
+  getCityOveragePerQuarterRange().clearContent();
+  getCountyOveragePerQuarterRange().clearContent();
 }

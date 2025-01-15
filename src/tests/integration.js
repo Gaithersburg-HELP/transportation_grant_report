@@ -24,6 +24,13 @@ function testAll() {
     assertion &&
     compareTestData("Non City Grant Totals", getCountyReportTotalsRange(), "TestAll", "NonCityGrantTotalsOutput");
 
+  assertion =
+    assertion && compareTestData("City Overages", getCityOveragePerQuarterRange(), "TestAll", "CityOverageOutput");
+
+  assertion =
+    assertion &&
+    compareTestData("County Overages", getCountyOveragePerQuarterRange(), "TestAll", "CountyOverageOutput");
+
   // Test database editing
   userClearTotalsAddresses();
 
@@ -56,6 +63,13 @@ function testAll() {
   assertion =
     assertion &&
     compareTestData("Non City Grant Totals", getCountyReportTotalsRange(), "TestAllEdit", "NonCityGrantTotalsOutput");
+
+  assertion =
+    assertion && compareTestData("City Overages", getCityOveragePerQuarterRange(), "TestAllEdit", "CityOverageOutput");
+
+  assertion =
+    assertion &&
+    compareTestData("County Overages", getCountyOveragePerQuarterRange(), "TestAllEdit", "CountyOverageOutput");
 
   clearAll();
   setCurrencyFormat(getCityFundPerQuarterRange().setValue(existingCityFundLimit));
