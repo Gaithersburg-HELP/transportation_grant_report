@@ -154,6 +154,8 @@ class RunningTotal {
     this._currentQuarter = 1;
     this.runningTotals = [];
     this.grantTypes = [];
+    this._cityOverages = [0.0, 0.0, 0.0];
+    this._countyOverages = [0.0, 0.0, 0.0];
   }
 
   _calculateRunningTotal(limit, grantType, grantTypeIfOverLimit) {
@@ -204,6 +206,21 @@ class RunningTotal {
         this.grantTypes.push("JCA");
         break;
     }
+  }
+
+  static _getOveragesWithLabels(overages) {
+    return overages.map(
+      (overage, index) =>
+        `Q${index + 2}: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(overage)}`,
+    );
+  }
+
+  cityOveragesWithLabel() {
+    return RunningTotal._getOveragesWithLabels(this._cityOverages);
+  }
+
+  countyOveragesWithLabel() {
+    return RunningTotal._getOveragesWithLabels(this._countyOverages);
   }
 }
 
@@ -301,6 +318,9 @@ function userRecalculateTotalsAddresses() {
 
   setPlainFormat(getTotalRange().setValues(cityTotals.output()));
   setCurrencyFormat(getTotalCurrencyRange());
+
+  setPlainFormat(getCityOveragePerQuarterRange().setValues([runningTotal.cityOveragesWithLabel()]));
+  setPlainFormat(getCountyOveragePerQuarterRange().setValues([runningTotal.countyOveragesWithLabel()]));
 
   setCurrencyFormat(
     getRangeCol(getDatabaseRange("DatabaseAndCalculated"), DB_FIELD_INDICES.RunningTotal).setValues(
