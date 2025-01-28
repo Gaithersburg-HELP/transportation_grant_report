@@ -440,10 +440,7 @@ function userAddRecords(skipWarning = false) {
 }
 
 function userClearTotalsAddresses() {
-  setPlainFormat(getTotalRange().setValue(0));
-  setCurrencyFormat(getTotalCurrencyRange());
-  getCalculatedFieldsRange().clearContent();
-  getAddressReportRange().clearContent();
+  clearCalculatedFields();
   unprotectDatabase();
 }
 

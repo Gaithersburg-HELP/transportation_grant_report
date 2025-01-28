@@ -201,14 +201,19 @@ const LISTING_FIELD_INDICES = Object.freeze({
   Q4: 13,
 });
 
-function clearAll() {
-  SpreadsheetApp.flush();
-  getPasteRange().clearContent();
+function clearCalculatedFields() {
   setPlainFormat(getTotalRange().setValue(0));
   setCurrencyFormat(getTotalCurrencyRange());
-  getDatabaseRange().clearContent();
-  getAddressReportRange().clearContent();
   getCalculatedFieldsRange().clearContent();
   getCityOveragePerQuarterRange().clearContent();
   getCountyOveragePerQuarterRange().clearContent();
+  getAddressReportRange().clearContent();
+}
+
+function clearAll() {
+  SpreadsheetApp.flush();
+  clearCalculatedFields()
+
+  getPasteRange().clearContent();
+  getDatabaseRange().clearContent();
 }
