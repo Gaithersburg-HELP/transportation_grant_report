@@ -212,7 +212,7 @@ function clearCalculatedFields() {
 
 function clearAll() {
   SpreadsheetApp.flush();
-  clearCalculatedFields()
+  clearCalculatedFields();
 
   getPasteRange().clearContent();
   getDatabaseRange().clearContent();

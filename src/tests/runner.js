@@ -19,10 +19,6 @@ function runAllTests() {
       assert.true(testOverage());
     });
 
-    QUnit.test("testOverageImmediate", (assert) => {
-      assert.true(testOverageImmediate());
-    });
-
     /* only run this when you need to to avoid hitting daily quota
     QUnit.test("testMaximumValidation", (assert) => {
       assert.true(testMaximumValidation());
@@ -167,4 +163,26 @@ function compareTestData(actualRangeName, rangeToCompare, testName, dataName) {
     `${actualRangeName} range does not match expected range: ${testName},${dataName} at ${testDataRng.getRow() + errorRowIndex - 1},${columnToLetter(testDataRng.getColumn() + errorColIndex - 1)}`,
   );
   return false;
+}
+
+function runTest(testFn) {
+  const { existingCityFundLimit, existingCountyFundLimit } = testSetup();
+
+  const assertion = testFn();
+
+  testTeardown(existingCityFundLimit, existingCountyFundLimit);
+  return assertion;
+}
+
+function runBasicTest(testName) {
+  return runTest(() => {
+    let assertion = true;
+
+    pasteTestData(testName, "Input");
+    userAddRecords(true);
+
+    assertion = assertion && compareAllExceptCityNonCityTotals(testName);
+
+    return assertion;
+  });
 }
