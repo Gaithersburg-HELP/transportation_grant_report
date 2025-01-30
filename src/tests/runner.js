@@ -19,6 +19,10 @@ function runAllTests() {
       assert.true(testOverage());
     });
 
+    QUnit.test("testAddressChange", (assert) => {
+      assert.true(testAddressChange());
+    });
+
     /* only run this when you need to to avoid hitting daily quota
     QUnit.test("testMaximumValidation", (assert) => {
       assert.true(testMaximumValidation());

@@ -73,6 +73,20 @@ function testOverage() {
   );
 }
 
+function testAddressChange() {
+  return runTest(() => {
+    let assertion = true;
+
+    pasteTestData("TestAddressChange", "Input");
+    userAddRecords(true);
+
+    assertion = assertion && compareAllExceptCityNonCityTotals("TestAddressChange");
+    assertion = assertion && compareTestData("City Totals", getTotalRange(), "TestAddressChange", "TotalsOutput");
+
+    return assertion;
+  });
+}
+
 function testMaximumValidation() {
   return runTest(() => {
     // maximum number of rides/month is somewhere around 140, 140*12 = 1680 addresses
