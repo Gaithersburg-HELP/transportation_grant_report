@@ -147,32 +147,59 @@ class CityTotals {
 
 class RunningTotal {
   constructor(cityGrantLimit, countyGrantLimit) {
-    this._cityGrantLimit = cityGrantLimit;
-    this._countyGrantLimit = countyGrantLimit;
     this._runningTotal = 0.0;
-    this._grantLimitsReached = 0;
-    this._currentQuarter = 1;
+    this._grantLimitIndex = Object.freeze({
+      City: 0,
+      County: 1,
+      JCA: 2,
+    });
+    this._currentGrantLimit = this._grantLimitIndex.City;
+    this._lastRunningTotal = [0.0, 0.0]; // index using this._grantLimitIndex
     this.runningTotals = [];
     this.grantTypes = [];
-    this._cityOverages = [0.0, 0.0, 0.0];
-    this._countyOverages = [0.0, 0.0, 0.0];
+    this._quarter = Object.freeze({
+      Q1: 0,
+      Q2: 1,
+      Q3: 2,
+      Q4: 3,
+    });
+    this._currentQuarter = this._quarter.Q1;
+    this._limitsPlusOverage =
+      // index using [this._grantLimitIndex][this._quarter]
+      [
+        [cityGrantLimit, cityGrantLimit, cityGrantLimit, cityGrantLimit],
+        [countyGrantLimit, countyGrantLimit, countyGrantLimit, countyGrantLimit],
+      ];
+  }
+
+  _pushAndSetRunningTotal(grantType, lastRunningTotal) {
+    this.runningTotals.push(this._runningTotal);
+    this.grantTypes.push(grantType);
+    this._lastRunningTotal[this._currentGrantLimit] = lastRunningTotal;
   }
 
   _calculateRunningTotal(limit, grantType, grantTypeIfOverLimit) {
     if (this._runningTotal < limit) {
-      this.runningTotals.push(this._runningTotal);
-      this.grantTypes.push(grantType);
+      this._pushAndSetRunningTotal(grantType, this._runningTotal);
     } else if (this._runningTotal === limit) {
-      this.runningTotals.push(this._runningTotal);
-      this.grantTypes.push(grantType);
+      this._pushAndSetRunningTotal(grantType, limit);
+
       this._runningTotal = 0.0;
-      this._grantLimitsReached += 1;
+      this._currentGrantLimit += 1;
     } else {
       this._runningTotal -= limit;
-      this.runningTotals.push(this._runningTotal);
-      this.grantTypes.push(grantTypeIfOverLimit);
-      this._grantLimitsReached += 1;
+
+      this._pushAndSetRunningTotal(grantTypeIfOverLimit, limit);
+
+      this._currentGrantLimit += 1;
     }
+  }
+
+  _incrementOverage(grantLimitIndex) {
+    this._limitsPlusOverage[grantLimitIndex][this._currentQuarter + 1] =
+      this._limitsPlusOverage[grantLimitIndex][this._currentQuarter + 1] +
+      this._limitsPlusOverage[grantLimitIndex][this._currentQuarter] -
+      this._lastRunningTotal[grantLimitIndex];
   }
 
   // inCity is boolean
@@ -182,25 +209,38 @@ class RunningTotal {
       this.grantTypes.push("");
       return;
     }
-    if (quarter > this._currentQuarter) {
-      this._currentQuarter = quarter;
+    if (quarter - 1 > this._currentQuarter) {
+      this._incrementOverage(this._grantLimitIndex.City);
+      this._incrementOverage(this._grantLimitIndex.County);
+
+      this._currentQuarter += 1;
       this._runningTotal = 0.0;
-      this._grantLimitsReached = 0;
+      this._lastRunningTotal = [0.0, 0.0];
+      this._currentGrantLimit = this._grantLimitIndex.City;
     }
-    if (!inCity && this._grantLimitsReached === 0) {
+
+    if (!inCity && this._currentGrantLimit === this._grantLimitIndex.City) {
       this._runningTotal = 0.0;
-      this._grantLimitsReached = 1;
+      this._currentGrantLimit = this._grantLimitIndex.County;
     }
 
     this._runningTotal += total;
-    switch (this._grantLimitsReached) {
-      case 0:
-        this._calculateRunningTotal(this._cityGrantLimit, "City", "County/City");
+    switch (this._currentGrantLimit) {
+      case this._grantLimitIndex.City:
+        this._calculateRunningTotal(
+          this._limitsPlusOverage[this._grantLimitIndex.City][this._currentQuarter],
+          "City",
+          "County/City",
+        );
         break;
-      case 1:
-        this._calculateRunningTotal(this._countyGrantLimit, "County", "JCA/County");
+      case this._grantLimitIndex.County:
+        this._calculateRunningTotal(
+          this._limitsPlusOverage[this._grantLimitIndex.County][this._currentQuarter],
+          "County",
+          "JCA/County",
+        );
         break;
-      case 2:
+      case this._grantLimitIndex.JCA:
       default:
         this.runningTotals.push(this._runningTotal);
         this.grantTypes.push("JCA");
@@ -209,18 +249,20 @@ class RunningTotal {
   }
 
   static _getOveragesWithLabels(overages) {
-    return overages.map(
+    const overagesWithoutQ1 = [...overages];
+    overagesWithoutQ1.shift();
+    return overagesWithoutQ1.map(
       (overage, index) =>
         `Q${index + 2}: ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(overage)}`,
     );
   }
 
   cityOveragesWithLabel() {
-    return RunningTotal._getOveragesWithLabels(this._cityOverages);
+    return RunningTotal._getOveragesWithLabels(this._limitsPlusOverage[this._grantLimitIndex.City]);
   }
 
   countyOveragesWithLabel() {
-    return RunningTotal._getOveragesWithLabels(this._countyOverages);
+    return RunningTotal._getOveragesWithLabels(this._limitsPlusOverage[this._grantLimitIndex.County]);
   }
 }
 

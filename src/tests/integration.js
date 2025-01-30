@@ -69,7 +69,7 @@ function testOverage() {
     runBasicTest("TestOverageQ1Used") &&
     runBasicTest("TestOverageQ2Used") &&
     runBasicTest("TestOverageQ1UsedQ3UsesAll") &&
-    runbasicTest("TestOverageQ3UsesAll")
+    runBasicTest("TestOverageQ3UsesAll")
   );
 }
 
