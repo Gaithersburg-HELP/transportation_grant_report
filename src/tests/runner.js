@@ -130,7 +130,9 @@ function compareRanges(actualRange, expectedRange) {
           actualRangeValues[row][col] = actualRangeValues[row][col].toString();
         }
         if (actualRangeValues[row][col] !== expectedRangeValues[row][col]) {
-          Logger.log(`Actual ${actualRangeValues[row][col]} does not match Expected ${expectedRangeValues[row][col]}`);
+          Logger.log(
+            `Actual ${actualRangeValues[row][col]} - ${typeof actualRangeValues[row][col]} does not match Expected ${expectedRangeValues[row][col]} - ${typeof expectedRangeValues[row][col]}`,
+          );
           errorRowIndex = row + 1;
           errorColIndex = col + 1;
           break loopRow;

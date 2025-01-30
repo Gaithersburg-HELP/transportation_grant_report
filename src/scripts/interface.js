@@ -77,7 +77,10 @@ class CityTotals {
       this[key] = JSON.parse(JSON.stringify(blankTotals));
     }
 
-    this._unduplicatedMap = new Map();
+    // Two maps for unduplicated so we can check and double count if same client moves addresses
+    this._unduplicatedCityMap = new Map();
+    this._unduplicatedCountyMap = new Map();
+
     this._undupResidentJobInterviewMap = new Map();
     this._undupResidentHealthMap = new Map();
     this._undupResidentSocialMap = new Map();
@@ -106,16 +109,23 @@ class CityTotals {
 
   // inCity is Boolean
   increment(total, quarter, inCity, name, category) {
-    const unduplicated = CityTotals._setUnduplicated(this._unduplicatedMap, name);
+    let unduplicatedCity = false;
+    let unduplicatedCounty = false;
+    if (inCity) {
+      unduplicatedCity = CityTotals._setUnduplicated(this._unduplicatedCityMap, name);
+    } else {
+      unduplicatedCounty = CityTotals._setUnduplicated(this._unduplicatedCountyMap, name);
+    }
 
     this._expenditureProgram[quarter] += Number(total);
-    if (unduplicated) {
+
+    if (unduplicatedCity || unduplicatedCounty) {
       this._undupProgram[quarter] += 1;
     }
 
     if (inCity) {
       this._expenditureResident[quarter] += Number(total);
-      if (unduplicated) {
+      if (unduplicatedCity) {
         this._undupResident[quarter] += 1;
       }
 
@@ -280,6 +290,14 @@ function setPlainFormat(range) {
 
 function setCurrencyFormat(range) {
   range.setNumberFormat('"$"#,##0.00');
+}
+
+function setFormat() {
+  // For developer use to set formatting
+  for (const range of SpreadsheetApp.getActiveSheet().getSelection().getActiveRangeList().getRanges()) {
+    setPlainFormat(range);
+    Logger.log(typeof range.getValue());
+  }
 }
 
 function userRecalculateTotalsAddresses() {

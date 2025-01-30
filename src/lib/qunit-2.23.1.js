@@ -8,7 +8,7 @@
  */
 
 // To use the GAS debugger, QUnit must be commented out. Set to if(false) to do this easily
-if (false) {
+if (true) {
   (function () {
     "use strict";
 
