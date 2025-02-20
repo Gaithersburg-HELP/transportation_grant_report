@@ -36,20 +36,25 @@ function testAll() {
 
     // clearContent() is the same as user hitting delete in terms of sorting
     // (blank rows will be sorted to the bottom) and also won't be counted when calling getLastRow()
+    // Clear row for Unique New York
     getDatabaseRange().offset(3, 0, 1).clearContent();
 
-    // Modify last two records
+    // Modify last two records: Hickory Poke and Recital Ire
     getDatabaseRange().getCell(27, DB_FIELD_INDICES.InCity).setValue("Discard");
     getDatabaseRange().getCell(28, DB_FIELD_INDICES.InCity).setValue("Yes");
 
+    // Modify Cobra Hunter
     getDatabaseRange().getCell(2, DB_FIELD_INDICES.Category).setValue("Social Svc Agcy");
 
+    // Modify Lukewarm Elephant
     getDatabaseRange().getCell(8, DB_FIELD_INDICES.ApptDate).setValue("2/14/2024");
 
+    // Modify Jackfruit Watermelon
     getDatabaseRange()
       .getCell(11, DB_FIELD_INDICES.Address)
       .setValue("9 North Summit Drive Apt 102 , Gaithersburg, MD");
 
+    // Modify Banana Yellow
     getDatabaseRange().getCell(3, DB_FIELD_INDICES.Total).setValue("36.50");
 
     userRecalculateTotalsAddresses();
@@ -59,6 +64,20 @@ function testAll() {
     assertion =
       assertion &&
       compareTestData("Non City Grant Totals", getCountyReportTotalsRange(), "TestAllEdit", "NonCityGrantTotalsOutput");
+
+    // Edit earliest record for Elaborate Rectangle from Discard to Yes, this should propagate to rest of records
+    getDatabaseRange().getCell(5, DB_FIELD_INDICES.InCity).setValue("Yes");
+
+    // Test to make sure adding new records doesn't override user edits
+    pasteTestData("TestAllPostEditAdd", "Input", 1);
+    userAddRecords(true);
+
+    // Test to make sure adding same resident new records accepts user edits
+    pasteTestData("TestAllPostEditAdd", "Input", 3, 2);
+    userAddRecords(true);
+
+    assertion = assertion && compareTestData(`Database`, getDatabaseRange(), "TestAllPostEditAdd", "DatabaseOutput");
+
     return assertion;
   });
 }
