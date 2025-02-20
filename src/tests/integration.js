@@ -106,6 +106,20 @@ function testAddressChange() {
   });
 }
 
+function testUnduplicatedCategory() {
+  return runTest(() => {
+    let assertion = true;
+
+    pasteTestData("TestUnduplicatedCategory", "Input");
+    userAddRecords(true);
+
+    assertion =
+      assertion && compareTestData("City Totals", getTotalRange(), "TestUnduplicatedCategory", "TotalsOutput");
+
+    return assertion;
+  });
+}
+
 function testMaximumValidation() {
   return runTest(() => {
     // maximum number of rides/month is somewhere around 140, 140*12 = 1680 addresses

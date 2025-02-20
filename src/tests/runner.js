@@ -23,6 +23,10 @@ function runAllTests() {
       assert.true(testAddressChange());
     });
 
+    QUnit.test("testUnduplicatedCategory", (assert) => {
+      assert.true(testUnduplicatedCategory());
+    });
+
     /* only run this when you need to to avoid hitting daily quota
     QUnit.test("testMaximumValidation", (assert) => {
       assert.true(testMaximumValidation());

@@ -210,6 +210,7 @@ function clearCalculatedFields() {
   getAddressReportRange().clearContent();
 }
 
+// For developer use to reset spreadsheet
 function clearAll() {
   SpreadsheetApp.flush();
   clearCalculatedFields();

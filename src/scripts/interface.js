@@ -292,12 +292,20 @@ function setCurrencyFormat(range) {
   range.setNumberFormat('"$"#,##0.00');
 }
 
-function setFormat() {
-  // For developer use to set formatting
+// For developer use to get formatting
+function getFormat() {
   for (const range of SpreadsheetApp.getActiveSheet().getSelection().getActiveRangeList().getRanges()) {
-    setPlainFormat(range);
+    Logger.log(range.getNumberFormat());
     Logger.log(typeof range.getValue());
   }
+}
+
+// For developer use to set formatting
+function setFormat() {
+  for (const range of SpreadsheetApp.getActiveSheet().getSelection().getActiveRangeList().getRanges()) {
+    setPlainFormat(range);
+  }
+  getFormat();
 }
 
 function userRecalculateTotalsAddresses() {
