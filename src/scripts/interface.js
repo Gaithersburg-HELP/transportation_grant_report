@@ -419,6 +419,9 @@ function userRecalculateTotalsAddresses() {
     row += 1;
   }
 
+  // BUG Fails if no records in address listings
+  // should probably include a check for this and clear address report
+  // if no address listings
   setPlainFormat(getAddressReportRange().offset(0, 0, addressListingReport.length).setValues(addressListingReport));
 
   getAddressReportRange().sort([

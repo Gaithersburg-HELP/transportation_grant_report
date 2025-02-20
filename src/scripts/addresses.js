@@ -157,6 +157,7 @@ function Address(rawAddress) {
 function AddressValidation(row) {
   this.rows = [row];
   this.inCity = false;
+  this.skipValidation = false;
 }
 
 // Sends requests in chunks of 200
@@ -204,15 +205,17 @@ function validateAddresses(addressValidations) {
   const addressesInRequestOrder = [];
   const requests = [];
   addressValidations.forEach((validation, address) => {
-    escapedAddress = address.replaceAll("'", "''");
-    const url =
-      `https://maps.gaithersburgmd.gov/arcgis/rest/services/layers/GaithersburgCityAddresses/` +
-      `MapServer/0/query?` +
-      `f=json&returnGeometry=false&` +
-      `outFields=Full_Address,Address_Number,Road_Prefix_Dir,Road_Name,Road_Type,Road_Post_Dir,Unit_Type,Unit_Number,Zip_Code&` +
-      `where=Full_Address%20LIKE%20%27${encodeURI(escapedAddress)}%27`;
-    requests.push(url);
-    addressesInRequestOrder.push(address);
+    if (!validation.skipValidation) {
+      escapedAddress = address.replaceAll("'", "''");
+      const url =
+        `https://maps.gaithersburgmd.gov/arcgis/rest/services/layers/GaithersburgCityAddresses/` +
+        `MapServer/0/query?` +
+        `f=json&returnGeometry=false&` +
+        `outFields=Full_Address,Address_Number,Road_Prefix_Dir,Road_Name,Road_Type,Road_Post_Dir,Unit_Type,Unit_Number,Zip_Code&` +
+        `where=Full_Address%20LIKE%20%27${encodeURI(escapedAddress)}%27`;
+      requests.push(url);
+      addressesInRequestOrder.push(address);
+    }
   });
 
   const reattemptValidationRequests = [];
