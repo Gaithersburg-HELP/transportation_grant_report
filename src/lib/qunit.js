@@ -1,5 +1,5 @@
 // To use the GAS debugger, QUnit must be commented out. Set to if(false) to do this easily
-if (false) {
+if (true) {
   /*!
    * QUnit 2.24.1
    * https://qunitjs.com/

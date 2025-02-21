@@ -1,6 +1,6 @@
 // Because GAS debugger hangs when QUnit is loaded, all tests are written without QUnit so they can be debugged
 // Only this runner function loads QUnit to check if tests return true
-// Search for "failed" in console log to find failing tests
+// Search for "actual=false" in console log to find failing tests
 function runAllTests() {
   QUnit.on("runEnd", (runEnd) => {
     Logger.log(JSON.stringify(runEnd, null, " "));
@@ -83,7 +83,7 @@ function loadTestDataRange(testName, dataName) {
   // see https://issuetracker.google.com/issues/171281549
   const lastRowWithData = testSheet
     .getRange(dataRowEnd + 1, dataColStart)
-    .getNextDataCell(SpreadsheetApp.Direction.UP) // did you unhide all columns on the TEST sheet? :)
+    /* did you unhide all columns on the TEST sheet? :) */ .getNextDataCell(SpreadsheetApp.Direction.UP)
     .getRow();
 
   const dataRange = testSheet.getRange(
