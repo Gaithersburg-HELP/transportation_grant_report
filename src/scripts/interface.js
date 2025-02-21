@@ -80,11 +80,6 @@ class CityTotals {
     // Two maps for unduplicated so we can check and double count if same client moves addresses
     this._unduplicatedCityMap = new Map();
     this._unduplicatedCountyMap = new Map();
-
-    this._undupResidentJobInterviewMap = new Map();
-    this._undupResidentHealthMap = new Map();
-    this._undupResidentSocialMap = new Map();
-    this._undupResidentVaxMap = new Map();
   }
 
   output() {
@@ -127,29 +122,21 @@ class CityTotals {
       this._expenditureResident[quarter] += Number(total);
       if (unduplicatedCity) {
         this._undupResident[quarter] += 1;
-      }
 
-      switch (category) {
-        case "Job Interview":
-          if (CityTotals._setUnduplicated(this._undupResidentJobInterviewMap, name)) {
+        switch (category) {
+          case "Job Interview":
             this._undupResidentJobInterview[quarter] += 1;
-          }
-          break;
-        case "Health Appt":
-          if (CityTotals._setUnduplicated(this._undupResidentHealthMap, name)) {
+            break;
+          case "Health Appt":
             this._undupResidentHealth[quarter] += 1;
-          }
-          break;
-        case "Social Svc Agcy":
-          if (CityTotals._setUnduplicated(this._undupResidentSocialMap, name)) {
+            break;
+          case "Social Svc Agcy":
             this._undupResidentSocial[quarter] += 1;
-          }
-          break;
-        case "Vax/Testing":
-          if (CityTotals._setUnduplicated(this._undupResidentVaxMap, name)) {
+            break;
+          case "Vax/Testing":
             this._undupResidentVax[quarter] += 1;
-          }
-          break;
+            break;
+        }
       }
     }
   }
