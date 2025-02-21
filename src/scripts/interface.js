@@ -318,8 +318,14 @@ function userRecalculateTotalsAddresses() {
   // Sort blank rows to the bottom where they will be forgotten
   getDatabaseRange("DatabaseAndCalculated").sort([{ column: DB_FIELD_INDICES.InCity, ascending: false }]);
 
+  // Now sort by date so we can preserve earliest InCity value across all instances of the same addresses
+  getDatabaseRange("DatabaseAndCalculated").sort([{ column: DB_FIELD_INDICES.ApptDate, ascending: true }]);
+
   const dbLength = getDatabaseRange().getNumRows();
   const database = getDatabaseRange().getValues();
+
+  const duplicateAddresses = new Map();
+  const updatedInCity = Array.from({ length: dbLength }, () => Array(1));
 
   const numCalculatedFields = getCalculatedFieldsRange().getNumColumns();
 
@@ -327,6 +333,14 @@ function userRecalculateTotalsAddresses() {
 
   let row = 0;
   while (row < dbLength) {
+    // Preserve earliest InCity value
+    if (duplicateAddresses.has(database[row][DB_FIELD_INDICES.Address - 1])) {
+      updatedInCity[row][0] = duplicateAddresses.get(database[row][DB_FIELD_INDICES.Address - 1]);
+    } else {
+      duplicateAddresses.set(database[row][DB_FIELD_INDICES.Address - 1], database[row][DB_FIELD_INDICES.InCity - 1]);
+      updatedInCity[row][0] = database[row][DB_FIELD_INDICES.InCity - 1];
+    }
+
     const address = new Address(database[row][DB_FIELD_INDICES.Address - 1]);
     // NOTE in theory if date is invalid this would display NaN and cause the record to be unreported
     calculatedFields[row][CALC_FIELD_INDICES.Quarter - 1] = getQuarter(database[row][DB_FIELD_INDICES.ApptDate - 1]);
@@ -338,6 +352,7 @@ function userRecalculateTotalsAddresses() {
     row += 1;
   }
 
+  setPlainFormat(getRangeCol(getDatabaseRange(), DB_FIELD_INDICES.InCity).setValues(updatedInCity));
   setPlainFormat(getCalculatedFieldsRange().offset(0, 0, dbLength).setValues(calculatedFields));
 
   getDatabaseRange("DatabaseAndCalculated").sort([

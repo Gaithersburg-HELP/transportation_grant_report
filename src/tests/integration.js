@@ -76,6 +76,10 @@ function testAll() {
     pasteTestData("TestAllPostEditAdd", "Input", 3, 2);
     userAddRecords(true);
 
+    // Test to make sure editing earliest record for Apple Zygote and recalculating values propagates to rest of records
+    getDatabaseRange().getCell(1, DB_FIELD_INDICES.InCity).setValue("Discard");
+    userRecalculateTotalsAddresses();
+
     assertion = assertion && compareTestData(`Database`, getDatabaseRange(), "TestAllPostEditAdd", "DatabaseOutput");
 
     return assertion;

@@ -83,7 +83,7 @@ function loadTestDataRange(testName, dataName) {
   // see https://issuetracker.google.com/issues/171281549
   const lastRowWithData = testSheet
     .getRange(dataRowEnd + 1, dataColStart)
-    .getNextDataCell(SpreadsheetApp.Direction.UP)
+    .getNextDataCell(SpreadsheetApp.Direction.UP) // did you unhide all columns on the TEST sheet? :)
     .getRow();
 
   const dataRange = testSheet.getRange(
