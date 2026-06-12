@@ -12,9 +12,10 @@ This is a Google Apps Script project which uses:
 
 To set up a local development environment, do the following:
 
-1. Install [Node.js](https://nodejs.org/en/download/)
-2. Install [Clasp](https://developers.google.com/apps-script/guides/clasp)
-3. Run `npm install` from the project directory
+1. Point `.clasp.json` to the correct script ID
+2. Install [Node.js](https://nodejs.org/en/download/)
+3. Install [Clasp](https://developers.google.com/apps-script/guides/clasp)
+4. Run `npm install` from the project directory
 
 To lint and format:
 
