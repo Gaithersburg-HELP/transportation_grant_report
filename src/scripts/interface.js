@@ -167,10 +167,18 @@ class CityTotals {
     if (inCity) {
       this._dupResident[quarter] += 1;
       switch (category) {
-        case "Job Interview": this._dupResidentJobInterview[quarter] += 1; break;
-        case "Health Appt":   this._dupResidentHealth[quarter] += 1; break;
-        case "Social Svc Agcy": this._dupResidentSocial[quarter] += 1; break;
-        case "Vax/Testing":   this._dupResidentVax[quarter] += 1; break;
+        case "Job Interview":
+          this._dupResidentJobInterview[quarter] += 1;
+          break;
+        case "Health Appt":
+          this._dupResidentHealth[quarter] += 1;
+          break;
+        case "Social Svc Agcy":
+          this._dupResidentSocial[quarter] += 1;
+          break;
+        case "Vax/Testing":
+          this._dupResidentVax[quarter] += 1;
+          break;
       }
     }
   }
@@ -422,7 +430,7 @@ function userRecalculateTotalsAddresses() {
 
   setPlainFormat(getTotalRange().setValues(cityTotals.outputUndup()));
   setCurrencyFormat(getTotalCurrencyRange());
-  
+
   setPlainFormat(getTotalDupRange().setValues(cityTotals.outputDup()));
 
   setPlainFormat(getCityOveragePerQuarterRange().setValues([runningTotal.cityOveragesWithLabel()]));

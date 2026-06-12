@@ -1,14 +1,15 @@
 {
   "timeZone": "America/New_York",
-  "dependencies": {
-  },
+  "dependencies": {},
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8",
   "sheets": {
-    "macros": [{
-      "menuName": "Lookup Address",
-      "functionName": "userLookupAddress",
-      "defaultShortcut": "Ctrl+Alt+Shift+1"
-    }]
+    "macros": [
+      {
+        "menuName": "Lookup Address",
+        "functionName": "userLookupAddress",
+        "defaultShortcut": "Ctrl+Alt+Shift+1"
+      }
+    ]
   }
 }

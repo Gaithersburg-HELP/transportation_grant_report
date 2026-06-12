@@ -28,10 +28,10 @@ if (true) {
     function _defineProperties(e, r) {
       for (var t = 0; t < r.length; t++) {
         var o = r[t];
-        (o.enumerable = o.enumerable || !1),
+        ((o.enumerable = o.enumerable || !1),
           (o.configurable = !0),
           "value" in o && (o.writable = !0),
-          Object.defineProperty(e, _toPropertyKey(o.key), o);
+          Object.defineProperty(e, _toPropertyKey(o.key), o));
       }
     }
     function _createClass(e, r, t) {
@@ -63,7 +63,7 @@ if (true) {
             f = !1;
           } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
         } catch (r) {
-          (o = !0), (n = r);
+          ((o = !0), (n = r));
         } finally {
           try {
             if (!f && null != t.return && ((u = t.return()), Object(u) !== u)) return;
@@ -7011,7 +7011,7 @@ if (true) {
           function n() {
             for (var e = 0, n = r[e], c = 1; c < o; ) {
               var f = c + 1;
-              (e = c), f < o && r[f].score < r[c].score && (e = f), (r[(e - 1) >> 1] = r[e]), (c = 1 + (e << 1));
+              ((e = c), f < o && r[f].score < r[c].score && (e = f), (r[(e - 1) >> 1] = r[e]), (c = 1 + (e << 1)));
             }
             for (var a = (e - 1) >> 1; e > 0 && n.score < r[a].score; a = ((e = a) - 1) >> 1) r[e] = r[a];
             r[e] = n;
@@ -7026,14 +7026,14 @@ if (true) {
             (e.poll = function () {
               if (0 !== o) {
                 var e = r[0];
-                return (r[0] = r[--o]), n(), e;
+                return ((r[0] = r[--o]), n(), e);
               }
             }),
             (e.peek = function (e) {
               if (0 !== o) return r[0];
             }),
             (e.replaceTop = function (o) {
-              (r[0] = o), n();
+              ((r[0] = o), n());
             }),
             e
           );
