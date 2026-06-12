@@ -44,6 +44,10 @@ function getTotalRange() {
   return getHomeSheet().getRange("H2:K9");
 }
 
+function getTotalDupRange() {
+  return getHomeSheet().getRange("O4:R9");
+}
+
 function getTotalCurrencyRange() {
   return getHomeSheet().getRange("H2:K3");
 }
@@ -203,6 +207,7 @@ const LISTING_FIELD_INDICES = Object.freeze({
 
 function clearCalculatedFields() {
   setPlainFormat(getTotalRange().setValue(0));
+  setPlainFormat(getTotalDupRange().setValue(0));
   setCurrencyFormat(getTotalCurrencyRange());
   getCalculatedFieldsRange().clearContent();
   getCityOveragePerQuarterRange().clearContent();

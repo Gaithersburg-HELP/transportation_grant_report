@@ -77,18 +77,41 @@ class CityTotals {
       this[key] = JSON.parse(JSON.stringify(blankTotals));
     }
 
+    // --- new duplicated totals requested Sep 2025 ---
+    this._totalDupKeys = [
+      "_dupProgram",
+      "_dupResident",
+      "_dupResidentJobInterview",
+      "_dupResidentHealth",
+      "_dupResidentSocial",
+      "_dupResidentVax",
+    ];
+    for (const key of this._totalDupKeys) {
+      this[key] = JSON.parse(JSON.stringify(blankTotals));
+    }
+
     // Two maps for unduplicated so we can check and double count if same client moves addresses
     this._unduplicatedCityMap = new Map();
     this._unduplicatedCountyMap = new Map();
   }
 
-  output() {
+  outputUndup() {
     const numKeys = this._totalKeys.length;
     const totals = Array.from({ length: numKeys }, () => Array(4));
     for (let i = 1; i <= numKeys; i++) {
       for (let j = 1; j <= 4; j++) {
         const key = this._totalKeys[i - 1];
         totals[i - 1][j - 1] = this[key][j.toString()];
+      }
+    }
+    return totals;
+  }
+
+  outputDup() {
+    const totals = Array.from({ length: this._totalDupKeys.length }, () => Array(4));
+    for (let i = 0; i < this._totalDupKeys.length; i++) {
+      for (let j = 1; j <= 4; j++) {
+        totals[i][j - 1] = this[this._totalDupKeys[i]][j.toString()];
       }
     }
     return totals;
@@ -137,6 +160,17 @@ class CityTotals {
             this._undupResidentVax[quarter] += 1;
             break;
         }
+      }
+    }
+
+    this._dupProgram[quarter] += 1;
+    if (inCity) {
+      this._dupResident[quarter] += 1;
+      switch (category) {
+        case "Job Interview": this._dupResidentJobInterview[quarter] += 1; break;
+        case "Health Appt":   this._dupResidentHealth[quarter] += 1; break;
+        case "Social Svc Agcy": this._dupResidentSocial[quarter] += 1; break;
+        case "Vax/Testing":   this._dupResidentVax[quarter] += 1; break;
       }
     }
   }
@@ -386,8 +420,10 @@ function userRecalculateTotalsAddresses() {
     row += 1;
   }
 
-  setPlainFormat(getTotalRange().setValues(cityTotals.output()));
+  setPlainFormat(getTotalRange().setValues(cityTotals.outputUndup()));
   setCurrencyFormat(getTotalCurrencyRange());
+  
+  setPlainFormat(getTotalDupRange().setValues(cityTotals.outputDup()));
 
   setPlainFormat(getCityOveragePerQuarterRange().setValues([runningTotal.cityOveragesWithLabel()]));
   setPlainFormat(getCountyOveragePerQuarterRange().setValues([runningTotal.countyOveragesWithLabel()]));
