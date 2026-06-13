@@ -324,7 +324,7 @@ function setCurrencyFormat(range) {
 // For developer use to get formatting
 function getFormat() {
   for (const range of SpreadsheetApp.getActiveSheet().getSelection().getActiveRangeList().getRanges()) {
-    Logger.log(`Format of ${range.getValue()}`)
+    Logger.log(`Format of ${range.getValue()}`);
     Logger.log(range.getNumberFormat());
     Logger.log(typeof range.getValue());
   }
