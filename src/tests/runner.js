@@ -1,6 +1,7 @@
 // Because GAS debugger hangs when QUnit is loaded, all tests are written without QUnit so they can be debugged
 // Only this runner function loads QUnit to check if tests return true
 // Search for "actual=false" in console log to find failing tests
+// Do NOT tab away, do NOT lock screen, your browser will probably kill the tab and stop execution or clear the execution log. Runtime is about 7 minutes
 function runAllTests() {
   QUnit.on("runEnd", (runEnd) => {
     Logger.log(JSON.stringify(runEnd, null, " "));

@@ -27,6 +27,7 @@ function testAll() {
 
     assertion = assertion && compareAllExceptCityNonCityTotals("TestAll");
     assertion = assertion && compareTestData("City Totals", getTotalRange(), "TestAll", "TotalsOutput");
+    assertion = assertion && compareTestData("City Duplicate Totals", getTotalDupRange(), "TestAll", "DupTotalsOutput");
     assertion =
       assertion &&
       compareTestData("Non City Grant Totals", getCountyReportTotalsRange(), "TestAll", "NonCityGrantTotalsOutput");
@@ -61,6 +62,8 @@ function testAll() {
 
     assertion = assertion && compareAllExceptCityNonCityTotals("TestAllEdit");
     assertion = assertion && compareTestData("City Totals", getTotalRange(), "TestAllEdit", "TotalsOutput");
+    assertion =
+      assertion && compareTestData("City Duplicate Totals", getTotalDupRange(), "TestAllEdit", "DupTotalsOutput");
     assertion =
       assertion &&
       compareTestData("Non City Grant Totals", getCountyReportTotalsRange(), "TestAllEdit", "NonCityGrantTotalsOutput");
